@@ -3,13 +3,13 @@
     <li>
       <a href="{{ route('admin.dashboard') }}"
          class="block rounded px-3 py-2 hover:bg-gray-100 {{ request()->routeIs('admin.dashboard') ? 'bg-gray-100 font-medium' : '' }}">
-        📊 Dashboard
+        Dashboard
       </a>
     </li>
     <li>
       <a href="{{ route('admin.categories.index') }}"
          class="block rounded px-3 py-2 hover:bg-gray-100 {{ request()->routeIs('admin.categories.*') ? 'bg-gray-100 font-medium' : '' }}">
-        🏷️ Categories
+         Categories
       </a>
     </li>
   </ul>
