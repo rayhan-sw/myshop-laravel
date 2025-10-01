@@ -21,17 +21,19 @@ class AuthenticatedSessionController extends Controller
         ]);
     }
 
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request): RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         $request->authenticate();
         $request->session()->regenerate();
 
         $user = $request->user();
 
+        // IMPORTANT: admin must hard-redirect to Blade admin
         if ($user && $user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
+            return Inertia::location(route('admin.dashboard'));  // <— this is the key
         }
 
+        // Normal users continue in SPA
         return redirect()->intended(route('landing'));
     }
 
@@ -40,6 +42,8 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        // Go back to SPA landing after logout
         return redirect()->route('landing');
     }
 }
