@@ -12,6 +12,7 @@
       @endif
     </title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -35,16 +36,7 @@
           </div>
         @endif
 
-        @if(session('success'))
-          <div class="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-700">
-            {{ session('success') }}
-          </div>
-        @endif
-        @if(session('error'))
-          <div class="mb-4 rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700">
-            {{ session('error') }}
-          </div>
-        @endif
+        {{-- (opsional) fallback alert HTML kamu bisa hapus kalau sudah pakai SweetAlert semua --}}
         @if ($errors->any())
           <div class="mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800">
             <div class="font-medium">There were some problems with your input:</div>
@@ -65,6 +57,57 @@
         © {{ date('Y') }} Admin Panel — {{ config('app.name', 'Laravel') }}.
       </div>
     </footer>
+
+    {{-- ===== SweetAlert2 (CDN) ===== --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {{-- Flash toast via SweetAlert2 --}}
+    @if(session('success'))
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          Swal.fire({
+            toast: true, position: 'top-end', icon: 'success',
+            title: @json(session('success')), showConfirmButton: false, timer: 1800
+          });
+        });
+      </script>
+    @endif
+    @if(session('error'))
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          Swal.fire({
+            toast: true, position: 'top-end', icon: 'error',
+            title: @json(session('error')), showConfirmButton: false, timer: 2200
+          });
+        });
+      </script>
+    @endif
+
+    {{-- Confirm dialog untuk tombol dengan data-confirm --}}
+    <script>
+      document.addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-confirm]');
+        if (!btn) return;
+
+        const form = btn.closest('form');
+        if (!form) return;
+
+        e.preventDefault();
+
+        const title = btn.dataset.confirmTitle || 'Are you sure?';
+        const text  = btn.dataset.confirm || 'This action cannot be undone.';
+        const confirmText = btn.dataset.confirmBtn || 'Yes, proceed';
+
+        Swal.fire({
+          title, text, icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: confirmText,
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) form.submit();
+        });
+      });
+    </script>
 
     @stack('scripts')
   </body>

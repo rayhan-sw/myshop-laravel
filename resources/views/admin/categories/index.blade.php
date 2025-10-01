@@ -67,7 +67,7 @@
             </td>
 
             <td class="px-3 py-2 text-right">
-              {{-- Edit inline (tanpa JS; gunakan SweetAlert via class js-edit) --}}
+              {{-- Edit inline (tanpa JS khusus; submit langsung) --}}
               <details class="inline-block text-left align-middle">
                 <summary class="inline cursor-pointer rounded px-3 py-1 text-indigo-600 hover:bg-indigo-50">
                   Edit
@@ -75,7 +75,7 @@
 
                 <form method="POST"
                       action="{{ route('admin.categories.update', $cat) }}"
-                      class="mt-2 flex items-center gap-2 js-edit">
+                      class="mt-2 flex items-center gap-2">
                   @csrf
                   @method('PUT')
 
@@ -94,13 +94,18 @@
                 </form>
               </details>
 
-              {{-- Delete (SweetAlert via class js-delete) --}}
+              {{-- Delete (SweetAlert: gunakan data-confirm*) --}}
               <form action="{{ route('admin.categories.destroy', $cat) }}"
                     method="POST"
-                    class="inline ml-1 js-delete">
+                    class="inline ml-1">
                 @csrf
                 @method('DELETE')
-                <button class="rounded px-3 py-1 text-rose-600 hover:bg-rose-50">
+                <button
+                  type="submit"
+                  class="rounded px-3 py-1 text-rose-600 hover:bg-rose-50"
+                  data-confirm="Delete this category?"
+                  data-confirm-title="Confirm delete"
+                  data-confirm-btn="Yes, delete">
                   Delete
                 </button>
               </form>
