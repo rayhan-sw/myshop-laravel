@@ -3,8 +3,14 @@
 @section('content')
   <div class="mb-6 flex items-center justify-between">
     <h1 class="text-2xl font-semibold">Categories</h1>
+
+    {{-- (Opsional) Tombol uji SweetAlert --}}
+    <button id="testSwal" class="hidden rounded bg-emerald-600 px-3 py-1.5 text-white hover:bg-emerald-700">
+      Test SweetAlert
+    </button>
   </div>
 
+  {{-- Flash success --}}
   @if(session('success'))
     <div class="mb-4 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
       {{ session('success') }}
@@ -22,6 +28,8 @@
         class="w-full rounded-md border px-3 py-2"
         placeholder="New category name…"
         required
+        maxlength="100"
+        autocomplete="off"
       >
       <button class="btn-primary rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
         Add
@@ -44,22 +52,33 @@
         </tr>
       </thead>
       <tbody>
-        @forelse($categories as $i => $cat)
+        @forelse($categories as $cat)
           <tr class="border-b last:border-0">
             <td class="px-3 py-2">
               {{ $loop->iteration + (($categories->currentPage() - 1) * $categories->perPage()) }}
             </td>
-            <td class="px-3 py-2">{{ $cat->name }}</td>
-            <td class="px-3 py-2">{{ $cat->created_at?->format('Y-m-d H:i') }}</td>
+
+            <td class="px-3 py-2">
+              {{ $cat->name }}
+            </td>
+
+            <td class="px-3 py-2">
+              {{ $cat->created_at?->format('Y-m-d H:i') }}
+            </td>
+
             <td class="px-3 py-2 text-right">
-              {{-- Edit inline (tanpa JS) --}}
+              {{-- Edit inline (tanpa JS; gunakan SweetAlert via class js-edit) --}}
               <details class="inline-block text-left align-middle">
                 <summary class="inline cursor-pointer rounded px-3 py-1 text-indigo-600 hover:bg-indigo-50">
                   Edit
                 </summary>
-                <form method="POST" action="{{ route('admin.categories.update', $cat) }}" class="mt-2 flex items-center gap-2">
+
+                <form method="POST"
+                      action="{{ route('admin.categories.update', $cat) }}"
+                      class="mt-2 flex items-center gap-2 js-edit">
                   @csrf
                   @method('PUT')
+
                   <input
                     type="text"
                     name="name"
@@ -67,6 +86,7 @@
                     class="w-56 rounded-md border px-3 py-1"
                     maxlength="100"
                     required
+                    autocomplete="off"
                   >
                   <button class="rounded bg-indigo-600 px-3 py-1.5 text-white hover:bg-indigo-700">
                     Save
@@ -74,22 +94,23 @@
                 </form>
               </details>
 
-              {{-- Delete --}}
-              <form
-                action="{{ route('admin.categories.destroy', $cat) }}"
-                method="POST"
-                onsubmit="return confirm('Delete this category?')"
-                class="inline ml-1"
-              >
+              {{-- Delete (SweetAlert via class js-delete) --}}
+              <form action="{{ route('admin.categories.destroy', $cat) }}"
+                    method="POST"
+                    class="inline ml-1 js-delete">
                 @csrf
                 @method('DELETE')
-                <button class="rounded px-3 py-1 text-rose-600 hover:bg-rose-50">Delete</button>
+                <button class="rounded px-3 py-1 text-rose-600 hover:bg-rose-50">
+                  Delete
+                </button>
               </form>
             </td>
           </tr>
         @empty
           <tr>
-            <td colspan="4" class="px-3 py-6 text-center text-gray-500">No categories yet.</td>
+            <td colspan="4" class="px-3 py-6 text-center text-gray-500">
+              No categories yet.
+            </td>
           </tr>
         @endforelse
       </tbody>
