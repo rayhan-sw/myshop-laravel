@@ -6,7 +6,6 @@
     </a>
 
     <nav class="flex items-center gap-3 text-sm">
-      <a href="{{ route('landing') }}" class="hover:text-indigo-600">View Site</a>
       <div class="flex items-center gap-2">
         <span class="text-gray-600">{{ auth()->user()->name ?? 'Admin' }}</span>
         <form method="POST" action="{{ route('logout') }}">

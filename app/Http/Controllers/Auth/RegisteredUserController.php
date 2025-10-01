@@ -49,7 +49,7 @@ class RegisteredUserController extends Controller
             'phone'         => $request->phone,
             'address'       => $request->address,
             'role'          => 'customer', // default role
-            'password_hash' => Hash::make($request->password), // ⬅️ simpan ke password_hash
+            'password_hash' => Hash::make($request->password), // 
         ]);
 
         event(new Registered($user));
