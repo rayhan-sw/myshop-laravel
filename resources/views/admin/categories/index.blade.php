@@ -52,11 +52,34 @@
             <td class="px-3 py-2">{{ $cat->name }}</td>
             <td class="px-3 py-2">{{ $cat->created_at?->format('Y-m-d H:i') }}</td>
             <td class="px-3 py-2 text-right">
+              {{-- Edit inline (tanpa JS) --}}
+              <details class="inline-block text-left align-middle">
+                <summary class="inline cursor-pointer rounded px-3 py-1 text-indigo-600 hover:bg-indigo-50">
+                  Edit
+                </summary>
+                <form method="POST" action="{{ route('admin.categories.update', $cat) }}" class="mt-2 flex items-center gap-2">
+                  @csrf
+                  @method('PUT')
+                  <input
+                    type="text"
+                    name="name"
+                    value="{{ old('name', $cat->name) }}"
+                    class="w-56 rounded-md border px-3 py-1"
+                    maxlength="100"
+                    required
+                  >
+                  <button class="rounded bg-indigo-600 px-3 py-1.5 text-white hover:bg-indigo-700">
+                    Save
+                  </button>
+                </form>
+              </details>
+
+              {{-- Delete --}}
               <form
                 action="{{ route('admin.categories.destroy', $cat) }}"
                 method="POST"
                 onsubmit="return confirm('Delete this category?')"
-                class="inline"
+                class="inline ml-1"
               >
                 @csrf
                 @method('DELETE')
