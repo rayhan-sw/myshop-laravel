@@ -21,7 +21,7 @@ class AuthenticatedSessionController extends Controller
         ]);
     }
 
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request): \Symfony\Component\HttpFoundation\Response
     {
         $request->authenticate();
         $request->session()->regenerate();
@@ -29,11 +29,13 @@ class AuthenticatedSessionController extends Controller
         $user = $request->user();
 
         if ($user && $user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
+            return Inertia::location(route('admin.dashboard')); // defaultnya admin ke /admin
         }
 
-        return redirect()->intended(route('landing'));
+        return Inertia::location(route('landing')); // user biasa ke landing
     }
+
+
 
     public function destroy(Request $request): RedirectResponse
     {

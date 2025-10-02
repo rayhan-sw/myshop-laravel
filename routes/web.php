@@ -9,13 +9,13 @@ use App\Http\Middleware\BlockAdminFromFrontend;
 
 // ===== Frontend (Inertia) =====
 // Pakai FQCN middleware, bukan alias string
-Route::middleware(BlockAdminFromFrontend::class)->group(function () {
-    Route::get('/', fn () => Inertia::render('Landing'))->name('landing');
-    Route::get('/shop',        fn () => Inertia::render('Shop'))       ->name('shop');
-    Route::get('/contact',     fn () => Inertia::render('Contact'))    ->name('contact');
-    Route::get('/testimonial', fn () => Inertia::render('Testimonial'))->name('testimonial');
-    Route::get('/why',         fn () => Inertia::render('Why'))        ->name('why');
-});
+// ===== Frontend (Inertia) =====
+Route::get('/', fn () => Inertia::render('Landing'))->name('landing');
+Route::get('/shop',        fn () => Inertia::render('Shop'))       ->name('shop');
+Route::get('/contact',     fn () => Inertia::render('Contact'))    ->name('contact');
+Route::get('/testimonial', fn () => Inertia::render('Testimonial'))->name('testimonial');
+Route::get('/why',         fn () => Inertia::render('Why'))        ->name('why');
+
 
 // Dashboard universal
 Route::get('/dashboard', function () {
@@ -24,7 +24,7 @@ Route::get('/dashboard', function () {
         return redirect()->route('admin.dashboard');
     }
     return inertia::render('dashboard');
-})->middleware(['auth','verified'])->name('landing');
+})->middleware(['auth','verified'])->name('dashboard');
 
 // User profile
 Route::middleware('auth')->group(function () {
