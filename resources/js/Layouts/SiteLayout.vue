@@ -4,6 +4,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 
 const page = usePage();
 const user = page.props.auth?.user ?? null;
+const showMobileMenu = ref(false);
 
 // highlight aktif (opsional)
 const is = (name) => {
@@ -63,56 +64,14 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                     <span class="font-semibold">My Shop</span>
                 </Link>
 
-                <!-- Menu tengah -->
-                <ul class="hidden items-center gap-5 text-sm md:flex">
-                    <li>
-                        <Link
-                            :href="route('landing')"
-                            :class="{ 'text-indigo-600': is('landing') }"
-                            class="hover:text-indigo-600"
-                            >Home</Link
-                        >
-                    </li>
-                    <li>
-                        <Link
-                            :href="route('shop')"
-                            :class="{ 'text-indigo-600': is('shop') }"
-                            class="hover:text-indigo-600"
-                            >Shop</Link
-                        >
-                    </li>
-                    <li>
-                        <Link
-                            :href="route('why')"
-                            :class="{ 'text-indigo-600': is('why') }"
-                            class="hover:text-indigo-600"
-                            >Why Us</Link
-                        >
-                    </li>
-                    <li>
-                        <Link
-                            :href="route('testimonial')"
-                            :class="{ 'text-indigo-600': is('testimonial') }"
-                            class="hover:text-indigo-600"
-                            >Testimonials</Link
-                        >
-                    </li>
-                    <li>
-                        <Link
-                            :href="route('contact')"
-                            :class="{ 'text-indigo-600': is('contact') }"
-                            class="hover:text-indigo-600"
-                            >Contact</Link
-                        >
-                    </li>
-                    <!-- (opsional) Link Admin di menu tengah -->
-                    <li v-if="isAdmin">
-                        <Link
-                            :href="route('admin.dashboard')"
-                            class="text-amber-600 hover:text-amber-700"
-                            >Admin</Link
-                        >
-                    </li>
+                <!-- Menu Tengah (hanya desktop) -->
+                <ul class="hidden md:flex items-center gap-5 text-sm">
+                    <li><Link :href="route('landing')" :class="{ 'text-indigo-600': is('landing') }" class="hover:text-indigo-600">Home</Link></li>
+                    <li><Link :href="route('shop')" :class="{ 'text-indigo-600': is('shop') }" class="hover:text-indigo-600">Shop</Link></li>
+                    <li><Link :href="route('why')" :class="{ 'text-indigo-600': is('why') }" class="hover:text-indigo-600">Why Us</Link></li>
+                    <li><Link :href="route('testimonial')" :class="{ 'text-indigo-600': is('testimonial') }" class="hover:text-indigo-600">Testimonials</Link></li>
+                    <li><Link :href="route('contact')" :class="{ 'text-indigo-600': is('contact') }" class="hover:text-indigo-600">Contact</Link></li>
+                    <li v-if="isAdmin"><Link :href="route('admin.dashboard')" class="text-amber-600 hover:text-amber-700">Admin</Link></li>
                 </ul>
 
                 <!-- Aksi kanan -->
@@ -226,8 +185,35 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                             </div>
                         </transition>
                     </div>
+
+                    <!-- Hamburger (hanya mobile) -->
+                    <button
+                    @click="showMobileMenu = !showMobileMenu"
+                    class="rounded-md p-2 hover:bg-gray-100 md:hidden"
+                    aria-label="Menu"
+                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    </button>
+                    
+
                 </div>
             </nav>
+
+            <!-- Mobile dropdown menu -->
+            <transition name="fade">
+                <div v-if="showMobileMenu" class="md:hidden absolute top-14 left-0 w-full border-t bg-white shadow-md z-30">
+                    <ul class="flex flex-col gap-2 px-4 py-3 text-sm">
+                    <li><Link :href="route('landing')" class="block py-2 hover:text-indigo-600" :class="{ 'text-indigo-600': is('landing') }">Home</Link></li>
+                    <li><Link :href="route('shop')" class="block py-2 hover:text-indigo-600" :class="{ 'text-indigo-600': is('shop') }">Shop</Link></li>
+                    <li><Link :href="route('why')" class="block py-2 hover:text-indigo-600" :class="{ 'text-indigo-600': is('why') }">Why Us</Link></li>                        <li><Link :href="route('testimonial')" class="block py-2 hover:text-indigo-600" :class="{ 'text-indigo-600': is('testimonial') }">Testimonials</Link></li>
+                    <li><Link :href="route('contact')" class="block py-2 hover:text-indigo-600" :class="{ 'text-indigo-600': is('contact') }">Contact</Link></li>
+                    <li v-if="isAdmin"><Link :href="route('admin.dashboard')" class="block py-2 text-amber-600 hover:text-amber-700">Admin</Link></li>
+                    </ul>
+                </div>
+            </transition>
 
             <!-- Search bar -->
             <transition name="fade">
