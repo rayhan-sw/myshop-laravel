@@ -150,11 +150,15 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
 
                     <!-- Search -->
                     <button
-                        @click.stop="showSearch = !showSearch"
-                        class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        @click.stop="
+                            showSearch = !showSearch;
+                            if (showSearch) showAccount = false;
+                        "
+                        class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
                         title="Search"
                         aria-label="Open search"
                     >
+
                         <svg
                             v-if="!isDark"
                             xmlns="http://www.w3.org/2000/svg"
@@ -236,11 +240,13 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                     <!-- Account -->
                     <div class="relative" ref="accountRef">
                         <button
-                            @click.stop="toggleAccount"
-                            class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                            :title="user ? (user.name ?? 'Account') : 'Account'"
+                            @click.stop="
+                                toggleAccount();
+                                if (showAccount) showSearch = false;
+                            "
+                            class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
                             aria-haspopup="menu"
-                            :aria-expanded="showAccount ? 'true' : 'false'"
+                            aria-expanded="showAccount"
                         >
                             <svg
                                 v-if="!isDark"
@@ -425,7 +431,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
         </header>
 
         <!-- PAGE -->
-        <main class="flex-1 bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-200">
+        <main class="flex-1 bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-200 pt-14">
             <slot />
         </main>
 
