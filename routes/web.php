@@ -10,6 +10,7 @@ use App\Http\Middleware\BlockAdminFromFrontend;
 
 // ===== Frontend (Inertia) =====
 // Admin TIDAK boleh masuk ke grup ini → diblokir oleh middleware FQCN
+/*
 Route::middleware(BlockAdminFromFrontend::class)->group(function () {
     Route::get('/', fn () => Inertia::render('Landing'))->name('landing');
 
@@ -18,6 +19,12 @@ Route::middleware(BlockAdminFromFrontend::class)->group(function () {
     Route::get('/testimonial', fn () => Inertia::render('Testimonial'))->name('testimonial');
     Route::get('/why',         fn () => Inertia::render('Why'))        ->name('why');
 });
+*/
+Route::get('/', fn () => Inertia::render('Landing'))->name('landing');
+    Route::get('/shop',        fn () => Inertia::render('Shop'))       ->name('shop');
+    Route::get('/contact',     fn () => Inertia::render('Contact'))    ->name('contact');
+    Route::get('/testimonial', fn () => Inertia::render('Testimonial'))->name('testimonial');
+    Route::get('/why',         fn () => Inertia::render('Why'))        ->name('why');
 
 // ===== Dashboard universal =====
 // - Admin  → redirect ke admin.dashboard (Blade)
