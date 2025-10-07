@@ -1,227 +1,182 @@
 <script setup>
-import { Link, usePage, router } from '@inertiajs/vue3';
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { Head, Link } from '@inertiajs/vue3';
+import SiteLayout from '@/Layouts/SiteLayout.vue';
 
-const page = usePage();
-const authUser = page.props.auth?.user ?? null;
+// fitur kecil untuk “Why choose…”
+const features = [
+    {
+        title: 'Fast Delivery',
+        desc: 'Pengiriman cepat dan aman.',
+        icon: '/theme/images/truck.svg',
+    },
+    {
+        title: 'Best Quality',
+        desc: 'Kualitas produk unggulan.',
+        icon: '/theme/images/high-quality.svg',
+    },
+    {
+        title: 'Free Shipping',
+        desc: 'Gratis ongkir untuk syarat tertentu.',
+        icon: '/theme/images/free.svg',
+    },
+];
 
-// route highlight (opsional)
-const is = (name) => {
-    try {
-        return route().current(name);
-    } catch {
-        return false;
-    }
-};
-
-// SEARCH
-const showSearch = ref(false);
-const q = ref('');
-function submitSearch() {
-    if (!q.value) return;
-    router.visit(route('shop'), { data: { q: q.value }, preserveState: true });
-    showSearch.value = false;
-}
-
-// CART
-const cartHref = computed(() => (authUser ? route('shop') : route('login')));
-
-// ACCOUNT DROPDOWN
-const showAccount = ref(false);
-const accountRef = ref(null);
-function toggleAccount() {
-    showAccount.value = !showAccount.value;
-}
-function clickOutside(e) {
-    if (!accountRef.value) return;
-    if (!accountRef.value.contains(e.target)) showAccount.value = false;
-}
-onMounted(() => document.addEventListener('click', clickOutside));
-onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
+// produk dummy
+const products = Array.from({ length: 8 }).map((_, i) => ({
+    id: i + 1,
+    name: `Product ${i + 1}`,
+    price: (10 + (i + 1)).toFixed(2),
+    image: `/theme/images/p${i + 1}.png`,
+}));
 </script>
 
 <template>
-    <header class="sticky top-0 z-40 border-b bg-white/80 backdrop-blur">
-        <nav
-            class="mx-auto flex h-14 max-w-7xl items-center justify-between px-4"
-        >
-            <!-- Brand -->
-            <Link :href="route('landing')" class="flex items-center gap-2">
-                <img
-                    src="/theme/images/logo.png"
-                    alt="Logo"
-                    class="h-6 w-auto"
-                />
-                <span class="font-semibold">My Shop</span>
-            </Link>
+    <SiteLayout>
+        <Head title="Home" />
 
-            <!-- Middle menu -->
-            <ul class="hidden items-center gap-4 text-sm md:flex">
-                <li>
-                    <Link
-                        :href="route('landing')"
-                        :class="{ 'text-indigo-600': is('landing') }"
-                        class="hover:text-indigo-600"
-                        >Home</Link
-                    >
-                </li>
-                <li>
-                    <Link
-                        :href="route('shop')"
-                        :class="{ 'text-indigo-600': is('shop') }"
-                        class="hover:text-indigo-600"
-                        >Shop</Link
-                    >
-                </li>
-                <li>
-                    <Link
-                        :href="route('why')"
-                        :class="{ 'text-indigo-600': is('why') }"
-                        class="hover:text-indigo-600"
-                        >Why Us</Link
-                    >
-                </li>
-                <li>
-                    <Link
-                        :href="route('testimonial')"
-                        :class="{ 'text-indigo-600': is('testimonial') }"
-                        class="hover:text-indigo-600"
-                        >Testimonials</Link
-                    >
-                </li>
-                <li>
-                    <Link
-                        :href="route('contact')"
-                        :class="{ 'text-indigo-600': is('contact') }"
-                        class="hover:text-indigo-600"
-                        >Contact</Link
-                    >
-                </li>
-            </ul>
-
-            <!-- Right actions -->
-            <div class="flex items-center gap-2">
-                <!-- Search -->
-                <button
-                    @click.stop="showSearch = !showSearch"
-                    class="rounded-full p-2 hover:bg-gray-100"
-                    title="Search"
-                    aria-label="Open search"
-                >
-                    <img src="/theme/icons/search.svg" alt="" class="h-5 w-5" />
-                </button>
-
-                <!-- Cart -->
-                <Link
-                    :href="cartHref"
-                    class="rounded-full p-2 hover:bg-gray-100"
-                    :title="authUser ? 'Your Cart' : 'Login to view cart'"
-                    aria-label="Cart"
-                >
-                    <img src="/theme/icons/cart.svg" alt="" class="h-5 w-5" />
-                </Link>
-
-                <!-- Account dropdown -->
-                <div class="relative" ref="accountRef">
-                    <button
-                        @click.stop="toggleAccount"
-                        class="rounded-full p-2 hover:bg-gray-100"
-                        aria-haspopup="menu"
-                        aria-expanded="showAccount"
-                        :title="
-                            authUser ? (authUser.name ?? 'Account') : 'Account'
-                        "
-                    >
-                        <img
-                            src="/theme/icons/circle-user.svg"
-                            alt="Account"
-                            class="h-6 w-6"
-                        />
-                    </button>
-
-                    <transition name="fade">
-                        <div
-                            v-if="showAccount"
-                            class="absolute right-0 mt-2 w-44 overflow-hidden rounded-lg border bg-white shadow-lg"
-                            role="menu"
+        <!-- Hero -->
+        <section class="border-b bg-black">
+            <div
+                class="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 lg:grid-cols-2"
+            >
+                <div class="space-y-6 text-white">
+                    <h1 class="text-4xl/tight font-extrabold md:text-5xl/tight">
+                        Welcome To Our <br />
+                        <span class="text-indigo-400">Gift Shop</span>
+                    </h1>
+                    <p class="max-w-prose text-sm text-gray-300">
+                        Sequi perspiciatis nulla reiciendis, rem, tenetur
+                        impedit, eveniet non necessitatibus error distinctio
+                        mollitia suscipit. Nostrum fugit doloribus consequuntur
+                        distinctio esse.
+                    </p>
+                    <div class="flex gap-3">
+                        <Link :href="route('contact')" class="btn-primary"
+                            >Contact Us</Link
                         >
-                            <template v-if="authUser">
-                                <Link
-                                    :href="route('profile.edit')"
-                                    class="block px-4 py-2 text-sm hover:bg-gray-50"
-                                    role="menuitem"
-                                    @click="showAccount = false"
-                                >
-                                    Edit Profile
-                                </Link>
-                                <Link
-                                    :href="route('logout')"
-                                    method="post"
-                                    as="button"
-                                    class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-rose-600 hover:bg-rose-50"
-                                    role="menuitem"
-                                    @click="showAccount = false"
-                                >
-                                    <img
-                                        src="/theme/icons/user-logout.svg"
-                                        class="h-4 w-4"
-                                        alt=""
-                                    />
-                                    Logout
-                                </Link>
-                            </template>
-                            <template v-else>
-                                <Link
-                                    :href="route('login')"
-                                    class="block px-4 py-2 text-sm hover:bg-gray-50"
-                                    role="menuitem"
-                                    @click="showAccount = false"
-                                    >Login</Link
-                                >
-                                <Link
-                                    :href="route('register')"
-                                    class="block px-4 py-2 text-sm hover:bg-gray-50"
-                                    role="menuitem"
-                                    @click="showAccount = false"
-                                    >Register</Link
-                                >
-                            </template>
-                        </div>
-                    </transition>
+                        <Link
+                            :href="route('shop')"
+                            class="inline-flex items-center justify-center rounded-md border border-indigo-200 px-4 py-2 text-indigo-200 hover:bg-white/10"
+                        >
+                            Shop Now
+                        </Link>
+                    </div>
                 </div>
-            </div>
-        </nav>
 
-        <!-- Search bar -->
-        <transition name="fade">
-            <div v-if="showSearch" class="border-b bg-white/90">
-                <div
-                    class="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2"
-                >
-                    <input
-                        v-model="q"
-                        type="search"
-                        placeholder="Search products…"
-                        class="w-full rounded-md border px-3 py-2"
-                        @keyup.enter="submitSearch"
-                        aria-label="Search products"
+                <div class="relative">
+                    <img
+                        src="/theme/images/image3.jpeg"
+                        alt="Hero"
+                        class="h-auto w-full rounded-lg object-cover shadow"
                     />
-                    <button class="btn-primary" @click="submitSearch">
-                        Search
-                    </button>
+                    <img
+                        src="/theme/images/slider-bg.jpg"
+                        alt=""
+                        class="pointer-events-none absolute -left-8 -top-8 -z-10 w-40 opacity-20"
+                    />
                 </div>
             </div>
-        </transition>
-    </header>
-</template>
+        </section>
 
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.15s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-</style>
+        <!-- Latest Products -->
+        <section class="mx-auto max-w-7xl px-4 py-12">
+            <h2 class="text-center text-xl font-semibold">LATEST PRODUCTS</h2>
+            <div
+                class="xs:grid-cols-2 mt-8 grid gap-6 sm:grid-cols-3 lg:grid-cols-4"
+            >
+                <div
+                    v-for="p in products"
+                    :key="p.id"
+                    class="overflow-hidden rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 transition-colors"
+                >
+                    <div class="bg-gray-50 dark:bg-gray-800 transition-colors">
+                        <img
+                            :src="p.image"
+                            :alt="p.name"
+                            class="aspect-square w-full object-contain p-6"
+                        />
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-gray-900 dark:text-gray-100">{{ p.name }}</h3>
+                        <p class="mt-1 text-sm text-gray-700 dark:text-gray-400">
+                            $ {{ p.price }}
+                        </p>
+                        <button class="btn-primary mt-3 w-full">
+                            Add to cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <Link :href="route('shop')" class="btn-primary inline-flex"
+                    >View all Products</Link
+                >
+            </div>
+        </section>
+
+        <!-- Why choose -->
+        <section class="mx-auto max-w-7xl px-4 py-12">
+            <h2 class="text-center text-2xl font-semibold">
+                WHY CHOOSE MY SHOP
+            </h2>
+            <p class="mt-2 text-center text-gray-500">
+                Great products, fair prices, and fast delivery.
+            </p>
+            <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div
+                    v-for="(f, i) in features"
+                    :key="i"
+                    class="rounded-xl border p-6 text-center"
+                >
+                    <img
+                        :src="f.icon"
+                        :alt="f.title"
+                        class="mx-auto h-16 w-16 object-contain"
+                    />
+                    <h3 class="mt-4 font-semibold">{{ f.title }}</h3>
+                    <p class="mt-1 text-sm text-gray-500">{{ f.desc }}</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact + Map -->
+        <section class="mx-auto max-w-7xl px-4 pb-16">
+            <div class="grid gap-8 lg:grid-cols-2">
+                <div class="overflow-hidden rounded-lg border">
+                    <iframe
+                        src="https://maps.google.com/maps?q=jakarta&t=&z=12&ie=UTF8&iwloc=&output=embed"
+                        width="100%"
+                        height="420"
+                        style="border: 0"
+                        loading="lazy"
+                        allowfullscreen
+                    />
+                </div>
+                <form @submit.prevent class="space-y-3">
+                    <h3 class="text-xl font-semibold">CONTACT US</h3>
+                    <input
+                        type="text"
+                        placeholder="Name"
+                        class="w-full rounded-md border px-3 py-2"
+                    />
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        class="w-full rounded-md border px-3 py-2"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Phone"
+                        class="w-full rounded-md border px-3 py-2"
+                    />
+                    <textarea
+                        rows="5"
+                        placeholder="Message"
+                        class="w-full rounded-md border px-3 py-2"
+                    />
+                    <button class="btn-primary">Send</button>
+                </form>
+            </div>
+        </section>
+    </SiteLayout>
+</template>

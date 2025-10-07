@@ -87,9 +87,9 @@ const products = Array.from({ length: 8 }).map((_, i) => ({
                 <div
                     v-for="p in products"
                     :key="p.id"
-                    class="overflow-hidden rounded-xl border bg-white"
+                    class="overflow-hidden rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 transition-colors"
                 >
-                    <div class="bg-gray-50">
+                    <div class="bg-gray-50 dark:bg-gray-800 transition-colors">
                         <img
                             :src="p.image"
                             :alt="p.name"
@@ -97,8 +97,8 @@ const products = Array.from({ length: 8 }).map((_, i) => ({
                         />
                     </div>
                     <div class="p-4">
-                        <h3 class="font-medium">{{ p.name }}</h3>
-                        <p class="mt-1 text-sm text-gray-500">
+                        <h3 class="font-medium text-gray-900 dark:text-gray-100">{{ p.name }}</h3>
+                        <p class="mt-1 text-sm text-gray-700 dark:text-gray-400">
                             $ {{ p.price }}
                         </p>
                         <button class="btn-primary mt-3 w-full">
