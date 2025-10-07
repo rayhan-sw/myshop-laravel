@@ -8,7 +8,7 @@ export default {
         './resources/views/**/*.blade.php',
         './resources/js/**/*.vue',
     ],
-
+    darkMode: 'class', // <-- important!
     theme: {
         extend: {
             fontFamily: {
@@ -16,6 +16,7 @@ export default {
             },
         },
     },
-
+    
     plugins: [require('@tailwindcss/forms')],
 };
+

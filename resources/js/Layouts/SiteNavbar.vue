@@ -194,7 +194,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
 
         <!-- Search bar -->
         <transition name="fade">
-            <div v-if="showSearch" class="border-b bg-white/90">
+            <div v-if="showSearch" class="border-b bg-white/90 dark:bg-gray-900/90 dark:border-gray-800 backdrop-blur-sm transition-colors">
                 <div
                     class="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2"
                 >
@@ -202,7 +202,8 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                         v-model="q"
                         type="search"
                         placeholder="Search products…"
-                        class="w-full rounded-md border px-3 py-2"
+                        class="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 
+                        placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                         @keyup.enter="submitSearch"
                         aria-label="Search products"
                     />
