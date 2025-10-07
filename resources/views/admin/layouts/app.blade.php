@@ -36,7 +36,7 @@
           </div>
         @endif
 
-        {{-- (opsional) fallback alert HTML kamu bisa hapus kalau sudah pakai SweetAlert semua --}}
+        {{-- (opsional) fallback alert HTML --}}
         @if ($errors->any())
           <div class="mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800">
             <div class="font-medium">There were some problems with your input:</div>
@@ -83,30 +83,50 @@
       </script>
     @endif
 
-    {{-- Confirm dialog untuk tombol dengan data-confirm --}}
+    {{-- ===== Binding konfirmasi untuk form .js-delete & .js-edit ===== --}}
     <script>
-      document.addEventListener('click', function (e) {
-        const btn = e.target.closest('[data-confirm]');
-        if (!btn) return;
+      (function () {
+        function bindSwal() {
+          // Konfirmasi HAPUS
+          document.querySelectorAll('form.js-delete:not([data-swal-bound])').forEach(function (f) {
+            f.dataset.swalBound = '1';
+            f.addEventListener('submit', function (e) {
+              e.preventDefault(); e.stopImmediatePropagation();
+              Swal.fire({
+                title: 'Hapus data ini?',
+                text: 'Tindakan ini tidak bisa dibatalkan.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus',
+                cancelButtonText: 'Batal'
+              }).then(function (res) { if (res.isConfirmed) f.submit(); });
+            }, { capture: true });
+          });
 
-        const form = btn.closest('form');
-        if (!form) return;
+          // Konfirmasi EDIT/UPDATE
+          document.querySelectorAll('form.js-edit:not([data-swal-bound])').forEach(function (f) {
+            f.dataset.swalBound = '1';
+            f.addEventListener('submit', function (e) {
+              e.preventDefault(); e.stopImmediatePropagation();
+              Swal.fire({
+                title: 'Simpan perubahan?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Simpan',
+                cancelButtonText: 'Batal'
+              }).then(function (res) { if (res.isConfirmed) f.submit(); });
+            }, { capture: true });
+          });
+        }
 
-        e.preventDefault();
+        // Bind saat halaman siap
+        document.addEventListener('DOMContentLoaded', bindSwal);
 
-        const title = btn.dataset.confirmTitle || 'Are you sure?';
-        const text  = btn.dataset.confirm || 'This action cannot be undone.';
-        const confirmText = btn.dataset.confirmBtn || 'Yes, proceed';
-
-        Swal.fire({
-          title, text, icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: confirmText,
-          cancelButtonText: 'Cancel'
-        }).then((result) => {
-          if (result.isConfirmed) form.submit();
-        });
-      });
+        // Re-bind saat <details> dibuka/tutup (form edit ada di dalam <details>)
+        document.addEventListener('toggle', function (e) {
+          if (e.target.tagName === 'DETAILS') bindSwal();
+        }, true);
+      })();
     </script>
 
     @stack('scripts')
