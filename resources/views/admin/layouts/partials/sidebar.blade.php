@@ -12,5 +12,11 @@
          Categories
       </a>
     </li>
+    <li>
+      <a href="{{ route('admin.products.index') }}"
+         class="block rounded px-3 py-2 hover:bg-gray-100 {{ request()->routeIs('admin.products.*') ? 'bg-gray-100 font-medium' : '' }}">
+         Products
+      </a>
+    </li>
   </ul>
 </aside>
