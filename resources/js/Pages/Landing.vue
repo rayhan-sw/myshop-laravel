@@ -1,8 +1,8 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import SiteLayout from '@/Layouts/SiteLayout.vue';
 
-// fitur kecil untuk “Why choose…”
+// ====== Bagian lama: fitur/why choose (dipertahankan) ======
 const features = [
     {
         title: 'Fast Delivery',
@@ -21,20 +21,35 @@ const features = [
     },
 ];
 
-// produk dummy
-const products = Array.from({ length: 8 }).map((_, i) => ({
-    id: i + 1,
-    name: `Product ${i + 1}`,
-    price: (10 + (i + 1)).toFixed(2),
-    image: `/theme/images/p${i + 1}.png`,
-}));
+// ====== Data dari server (tanpa dummy) ======
+const page = usePage();
+// Gunakan salah satu: homeProducts (kalau kamu kirim) atau latestProducts (yang sudah ada)
+const products = page.props.homeProducts ?? page.props.latestProducts ?? [];
+
+// helper tampilan
+const categoryPath = (p) => {
+    const cat = p?.category;
+    if (!cat) return '';
+    return cat?.parent?.name ? `${cat.parent.name} → ${cat.name}` : cat.name;
+};
+
+// ambil gambar upload (url accessor) atau fallback dummy
+const imgOf = (p) => {
+    const url = p?.images?.[0]?.url;
+    if (url) return url;
+    const idx = Number(p?.id) % 8 || 1;
+    return `/theme/images/p${idx}.png`;
+};
+
+// link detail: pakai slug kalau ada, fallback ke id
+const showHref = (p) => route('product.show', p.slug ?? p.id);
 </script>
 
 <template>
     <SiteLayout>
         <Head title="Home" />
 
-        <!-- Hero -->
+        <!-- ====== Hero (dipertahankan) ====== -->
         <section class="border-b bg-black">
             <div
                 class="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 lg:grid-cols-2"
@@ -78,34 +93,41 @@ const products = Array.from({ length: 8 }).map((_, i) => ({
             </div>
         </section>
 
-        <!-- Latest Products -->
-        <section class="mx-auto max-w-7xl px-4 py-12">
-            <h2 class="text-center text-xl font-semibold">LATEST PRODUCTS</h2>
+        <!-- ====== Produk (gabungan dari admin) — kartu bisa diklik ke detail ====== -->
+        <section v-if="products.length" class="mx-auto max-w-7xl px-4 py-12">
+            <h2 class="text-center text-xl font-semibold">Produk</h2>
             <div
                 class="xs:grid-cols-2 mt-8 grid gap-6 sm:grid-cols-3 lg:grid-cols-4"
             >
-                <div
+                <article
                     v-for="p in products"
                     :key="p.id"
-                    class="overflow-hidden rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 transition-colors"
+                    class="overflow-hidden rounded-xl border bg-white"
                 >
-                    <div class="bg-gray-50 dark:bg-gray-800 transition-colors">
-                        <img
-                            :src="p.image"
-                            :alt="p.name"
-                            class="aspect-square w-full object-contain p-6"
-                        />
-                    </div>
+                    <Link :href="showHref(p)">
+                        <div class="bg-gray-50">
+                            <img
+                                :src="imgOf(p)"
+                                :alt="p.name"
+                                class="aspect-square w-full object-contain p-6"
+                            />
+                        </div>
+                    </Link>
                     <div class="p-4">
-                        <h3 class="font-medium text-gray-900 dark:text-gray-100">{{ p.name }}</h3>
-                        <p class="mt-1 text-sm text-gray-700 dark:text-gray-400">
-                            $ {{ p.price }}
+                        <Link
+                            :href="showHref(p)"
+                            class="font-medium hover:underline"
+                        >
+                            {{ p.name }}
+                        </Link>
+                        <p class="mt-1 text-sm text-gray-600">
+                            {{ categoryPath(p) }}
                         </p>
-                        <button class="btn-primary mt-3 w-full">
-                            Add to cart
-                        </button>
+                        <p class="mt-1 font-semibold">
+                            Rp {{ (p.price || 0).toLocaleString('id-ID') }}
+                        </p>
                     </div>
-                </div>
+                </article>
             </div>
             <div class="mt-8 text-center">
                 <Link :href="route('shop')" class="btn-primary inline-flex"
@@ -114,7 +136,7 @@ const products = Array.from({ length: 8 }).map((_, i) => ({
             </div>
         </section>
 
-        <!-- Why choose -->
+        <!-- ====== Why choose (dipertahankan) ====== -->
         <section class="mx-auto max-w-7xl px-4 py-12">
             <h2 class="text-center text-2xl font-semibold">
                 WHY CHOOSE MY SHOP
@@ -139,7 +161,7 @@ const products = Array.from({ length: 8 }).map((_, i) => ({
             </div>
         </section>
 
-        <!-- Contact + Map -->
+        <!-- ====== Contact + Map (dipertahankan) ====== -->
         <section class="mx-auto max-w-7xl px-4 pb-16">
             <div class="grid gap-8 lg:grid-cols-2">
                 <div class="overflow-hidden rounded-lg border">

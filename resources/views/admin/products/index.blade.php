@@ -63,12 +63,23 @@
               {{ $loop->iteration + (($products->currentPage() - 1) * $products->perPage()) }}
             </td>
 
-            {{-- Thumbnail --}}
+            {{-- Thumbnail (kuat: primaryImageUrl() -> first image url -> placeholder) --}}
             <td class="px-3 py-2">
-              @php $thumb = $p->primaryImageUrl(); @endphp
+              @php
+                $thumb = null;
+                try {
+                  if (method_exists($p, 'primaryImageUrl')) {
+                    $thumb = $p->primaryImageUrl();
+                  }
+                } catch (\Throwable $e) {}
+                if (!$thumb) {
+                  $thumb = optional($p->images->first())->url; // butuh accessor 'url' di ProductImage
+                }
+              @endphp
+
               @if($thumb)
                 <div class="relative">
-                  <img src="{{ $thumb }}" alt="" class="h-12 w-12 rounded object-cover border">
+                  <img src="{{ $thumb }}" alt="thumb" class="h-12 w-12 rounded object-cover border">
                   @if($p->images && $p->images->count() > 1)
                     <span class="absolute -right-1 -top-1 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-medium text-white">
                       {{ $p->images->count() }}
@@ -91,11 +102,10 @@
                 Edit
               </a>
 
-              <form action="{{ route('admin.products.destroy', $p) }}"
-                    method="POST"
-                    class="inline"
-                    onsubmit="return confirm('Delete this product?');">
-                @csrf @method('DELETE')
+              {{-- Hapus pakai SweetAlert: gunakan class js-delete, jangan pakai confirm() --}}
+              <form action="{{ route('admin.products.destroy', $p) }}" method="POST" class="inline js-delete">
+                @csrf
+                @method('DELETE')
                 <button class="rounded px-3 py-1 text-rose-600 hover:bg-rose-50 font-medium transition">
                   Delete
                 </button>
