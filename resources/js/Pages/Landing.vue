@@ -39,16 +39,16 @@ const products = Array.from({ length: 8 }).map((_, i) => ({
             <div
                 class="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 lg:grid-cols-2"
             >
-                <div class="space-y-6 text-white">
+                <div class="space-y-6 text-white pt-10">
                     <h1 class="text-4xl/tight font-extrabold md:text-5xl/tight">
                         Welcome To Our <br />
                         <span class="text-indigo-400">Gift Shop</span>
                     </h1>
                     <p class="max-w-prose text-sm text-gray-300">
-                        Sequi perspiciatis nulla reiciendis, rem, tenetur
-                        impedit, eveniet non necessitatibus error distinctio
-                        mollitia suscipit. Nostrum fugit doloribus consequuntur
-                        distinctio esse.
+                       “Second Soul” berangkat dari gagasan bahwa setiap barang memiliki cerita dan kenangan dari pemilik sebelumnya. Saat berpindah tangan, barang itu tidak kehilangan nilainya - justru mendapatkan jiwa baru melalui makna yang diberikan oleh pemilik berikutnya.
+
+Toko ini bukan sekadar tempat jual beli barang bekas, tetapi ruang yang menghargai sejarah kecil di balik benda-benda sederhana. Setiap item punya perjalanan unik - dan pembeli adalah bagian dari kelanjutan kisah itu.
+
                     </p>
                     <div class="flex gap-3">
                         <Link :href="route('contact')" class="btn-primary"
@@ -82,28 +82,29 @@ const products = Array.from({ length: 8 }).map((_, i) => ({
         <section class="mx-auto max-w-7xl px-4 py-12">
             <h2 class="text-center text-xl font-semibold">LATEST PRODUCTS</h2>
             <div
-                class="xs:grid-cols-2 mt-8 grid gap-6 sm:grid-cols-3 lg:grid-cols-4"
+                class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-8"
             >
                 <div
                     v-for="p in products"
                     :key="p.id"
                     class="overflow-hidden rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 transition-colors"
                 >
-                    <div class="bg-gray-50 dark:bg-gray-800 transition-colors">
+                    <!-- Gambar produk menjadi tombol/link -->
+                    <Link
+                        :href="route('shop', p.id)" 
+                        class="block bg-gray-50 dark:bg-gray-800 transition-colors hover:opacity-90"
+                    >
                         <img
                             :src="p.image"
                             :alt="p.name"
-                            class="aspect-square w-full object-contain p-6"
+                            class="aspect-square w-full object-contain p-6 cursor-pointer"
                         />
-                    </div>
+                    </Link>
                     <div class="p-4">
                         <h3 class="font-medium text-gray-900 dark:text-gray-100">{{ p.name }}</h3>
                         <p class="mt-1 text-sm text-gray-700 dark:text-gray-400">
                             $ {{ p.price }}
                         </p>
-                        <button class="btn-primary mt-3 w-full">
-                            Add to cart
-                        </button>
                     </div>
                 </div>
             </div>

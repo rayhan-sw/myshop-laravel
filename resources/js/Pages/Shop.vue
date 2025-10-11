@@ -10,12 +10,12 @@ import SiteLayout from '@/Layouts/SiteLayout.vue';
             <h1 class="text-2xl font-semibold">Our Products</h1>
 
             <div
-                class="xs:grid-cols-2 mt-6 grid gap-6 sm:grid-cols-3 lg:grid-cols-4"
+                class="grid-cols-2 mt-6 grid gap-6 sm:grid-cols-3 lg:grid-cols-4 "
             >
                 <div
                     v-for="i in 8"
                     :key="i"
-                    class="overflow-hidden rounded-xl border"
+                    class="overflow-hidden rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 transition-colors"
                 >
                     <div class="bg-gray-50">
                         <img

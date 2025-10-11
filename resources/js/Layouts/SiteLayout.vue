@@ -8,6 +8,12 @@ const showMobileMenu = ref(false);
 
 const isDark = ref(false);
 
+function closeAllPopups() {
+  showSearch.value = false
+  showAccount.value = false
+  showMobileMenu.value = false
+}
+
 function toggleDarkMode() {
   isDark.value = !isDark.value;
   const html = document.documentElement;
@@ -19,6 +25,15 @@ function toggleDarkMode() {
     localStorage.setItem('theme', 'light');
   }
 }
+
+//klik diluar popup untuk menutup semua popup
+onMounted(() => {
+  document.addEventListener('click', () => closeAllPopups());
+});
+onBeforeUnmount(() => {
+  document.removeEventListener('click', () => closeAllPopups());
+});
+
 
 onMounted(() => {
   const saved = localStorage.getItem('theme');
@@ -151,8 +166,8 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                     <!-- Search -->
                     <button
                         @click.stop="
+                            if (!showSearch) closeAllPopups();
                             showSearch = !showSearch;
-                            if (showSearch) showAccount = false;
                         "
                         class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
                         title="Search"
@@ -241,8 +256,8 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                     <div class="relative" ref="accountRef">
                         <button
                             @click.stop="
-                                toggleAccount();
-                                if (showAccount) showSearch = false;
+                                if (!showAccount) closeAllPopups();
+                                showAccount = !showAccount;
                             "
                             class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
                             aria-haspopup="menu"
@@ -350,7 +365,11 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
 
                     <!-- Hamburger (hanya mobile) -->
                     <button
-                        @click="showMobileMenu = !showMobileMenu"
+                        @click.stop="
+                            if (!showMobileMenu) closeAllPopups();
+                            showMobileMenu = !showMobileMenu;
+                        "
+
                         class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-gray-700 md:hidden"
                         aria-label="Menu"
                         >
@@ -431,7 +450,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
         </header>
 
         <!-- PAGE -->
-        <main class="flex-1 bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-200 pt-14">
+        <main class="flex-1 bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-200">
             <slot />
         </main>
 
