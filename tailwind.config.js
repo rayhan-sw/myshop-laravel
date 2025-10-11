@@ -13,6 +13,16 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                serif: ['Playfair Display', 'serif'],
+                body: ['Poppins', 'sans-serif'],
+            },
+            colors: {
+                cream: '#DCC7AA',
+                sage: '#A7B99E',
+                brown: '#6B584C',
+                offwhite: '#F6F1EB',
+                darksage: '#5C6D5B',
+                darkbrown: '#4A3F36',
             },
         },
     },

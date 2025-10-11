@@ -105,12 +105,12 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                 </Link>
 
                 <!-- Menu Tengah (hanya desktop) -->
-                <ul class="hidden md:flex items-center gap-5 text-sm text-gray-700 dark:text-gray-300">
-                    <li><Link :href="route('landing')" :class="{ 'text-indigo-600': is('landing') }" class="hover:text-indigo-600">Home</Link></li>
-                    <li><Link :href="route('shop')" :class="{ 'text-indigo-600': is('shop') }" class="hover:text-indigo-600">Shop</Link></li>
-                    <li><Link :href="route('why')" :class="{ 'text-indigo-600': is('why') }" class="hover:text-indigo-600">Why Us</Link></li>
-                    <li><Link :href="route('testimonial')" :class="{ 'text-indigo-600': is('testimonial') }" class="hover:text-indigo-600">Testimonials</Link></li>
-                    <li><Link :href="route('contact')" :class="{ 'text-indigo-600': is('contact') }" class="hover:text-indigo-600">Contact</Link></li>
+                <ul class="hidden md:flex items-center gap-5 text-sm text-gray-700 dark:text-gray-300 font-body">
+                    <li><Link :href="route('landing')" :class="{ 'text-brown dark:text-sage': is('landing') }" class="hover:text-sage">Home</Link></li>
+                    <li><Link :href="route('shop')" :class="{ 'text-brown dark:text-sage': is('shop') }" class="hover:text-sage">Shop</Link></li>
+                    <li><Link :href="route('why')" :class="{ 'text-brown dark:text-sage': is('why') }" class="hover:text-sage">Why Us</Link></li>
+                    <li><Link :href="route('testimonial')" :class="{ 'text-brown dark:text-sage': is('testimonial') }" class="hover:text-sage">Testimonials</Link></li>
+                    <li><Link :href="route('contact')" :class="{ 'text-brown dark:text-sage': is('contact') }" class="hover:text-sage">Contact</Link></li>
                     <li v-if="isAdmin"><a :href="route('admin.dashboard')" class="text-amber-600 hover:text-amber-700">Admin</a></li>
                 </ul>
 
@@ -309,7 +309,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                                     <a
                                         v-if="isAdmin"
                                         :href="route('admin.dashboard')"
-                                        class="block px-4 py-2 text-sm text-amber-700 hover:bg-amber-50"
+                                        class="block px-4 py-2 text-sm text-amber-700 hover:bg-amber-50 font-body"
                                         role="menuitem"
                                         >
                                         Admin Dashboard
@@ -318,7 +318,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
 
                                     <Link
                                         :href="route('profile.edit')"
-                                        class="block px-4 py-2 text-sm hover:bg-gray-50"
+                                        class="block px-4 py-2 text-sm hover:bg-gray-50 font-body"
                                         role="menuitem"
                                         @click="showAccount = false"
                                     >
@@ -328,7 +328,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                                         :href="route('logout')"
                                         method="post"
                                         as="button"
-                                        class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-rose-600 hover:bg-rose-50"
+                                        class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-rose-600 hover:bg-rose-50 font-body"
                                         role="menuitem"
                                         @click="showAccount = false"
                                     >
@@ -344,7 +344,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                                 <template v-else>
                                     <Link
                                         :href="route('login')"
-                                        class="block px-4 py-2 text-sm hover:bg-gray-50"
+                                        class="block px-4 py-2 text-sm hover:bg-gray-50 font-body"
                                         role="menuitem"
                                         @click="showAccount = false"
                                     >
@@ -352,7 +352,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                                     </Link>
                                     <Link
                                         :href="route('register')"
-                                        class="block px-4 py-2 text-sm hover:bg-gray-50"
+                                        class="block px-4 py-2 text-sm hover:bg-gray-50 font-body"
                                         role="menuitem"
                                         @click="showAccount = false"
                                     >
@@ -370,7 +370,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                             showMobileMenu = !showMobileMenu;
                         "
 
-                        class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-gray-700 md:hidden"
+                        class="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-gray-700 md:hidden font-body"
                         aria-label="Menu"
                         >
                         <svg
@@ -450,7 +450,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
         </header>
 
         <!-- PAGE -->
-        <main class="flex-1 bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-200">
+        <main class="flex-1 bg-offwhite text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-200">
             <slot />
         </main>
 

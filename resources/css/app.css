@@ -6,3 +6,13 @@
 .btn-primary {
     @apply inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-white transition hover:bg-indigo-700;
 }
+
+@layer base {
+  body {
+    @apply font-body bg-offwhite text-brown;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-serif text-brown;
+  }
+}

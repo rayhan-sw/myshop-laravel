@@ -6,7 +6,7 @@ import SiteLayout from '@/Layouts/SiteLayout.vue';
 <template>
     <SiteLayout>
         <Head title="Shop" />
-        <section class="mx-auto max-w-7xl px-4 py-10">
+        <section class="mx-auto max-w-7xl px-4 py-20">
             <h1 class="text-2xl font-semibold">Our Products</h1>
 
             <div
@@ -15,9 +15,9 @@ import SiteLayout from '@/Layouts/SiteLayout.vue';
                 <div
                     v-for="i in 8"
                     :key="i"
-                    class="overflow-hidden rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 transition-colors"
+                    class="overflow-hidden rounded-xl border bg-cream/30 dark:bg-gray-900 dark:border-gray-800 transition-colors"
                 >
-                    <div class="bg-gray-50">
+                    <div class="bg-offwhite/70 dark:bg-gray-800 transition hover:opacity-90">
                         <img
                             :src="`/theme/images/p${i}.png`"
                             :alt="`Product ${i}`"

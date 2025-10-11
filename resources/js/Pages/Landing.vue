@@ -35,28 +35,28 @@ const products = Array.from({ length: 8 }).map((_, i) => ({
         <Head title="Home" />
 
         <!-- Hero -->
-        <section class="border-b bg-black">
+        <section class=" bg-sage dark:bg-brown pt-10">
             <div
                 class="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 lg:grid-cols-2"
             >
-                <div class="space-y-6 text-white pt-10">
-                    <h1 class="text-4xl/tight font-extrabold md:text-5xl/tight">
+                <div class="space-y-6 text-white">
+                    <h1 class="text-brown dark:text-sage font-extrabold text-5xl/tight">
                         Welcome To Our <br />
-                        <span class="text-indigo-400">Gift Shop</span>
+                        <span class="text-offwhite">Gift Shop</span>
                     </h1>
-                    <p class="max-w-prose text-sm text-gray-300">
+                    <p class="max-w-prose text-sm text-brown dark:text-offwhite font-body">
                        “Second Soul” berangkat dari gagasan bahwa setiap barang memiliki cerita dan kenangan dari pemilik sebelumnya. Saat berpindah tangan, barang itu tidak kehilangan nilainya - justru mendapatkan jiwa baru melalui makna yang diberikan oleh pemilik berikutnya.
 
 Toko ini bukan sekadar tempat jual beli barang bekas, tetapi ruang yang menghargai sejarah kecil di balik benda-benda sederhana. Setiap item punya perjalanan unik - dan pembeli adalah bagian dari kelanjutan kisah itu.
 
                     </p>
                     <div class="flex gap-3">
-                        <Link :href="route('contact')" class="btn-primary"
+                        <Link :href="route('contact')" class="inline-flex items-center justify-center font-body rounded-md border border-sage bg-brown text-sage px-4 py-2 hover:bg-offwhite hover:border-brown transition"
                             >Contact Us</Link
                         >
                         <Link
                             :href="route('shop')"
-                            class="inline-flex items-center justify-center rounded-md border border-indigo-200 px-4 py-2 text-indigo-200 hover:bg-white/10"
+                            class="inline-flex items-center justify-center font-body rounded-md border border-brown px-4 py-2 text-brown hover:bg-white/10"
                         >
                             Shop Now
                         </Link>
@@ -80,19 +80,19 @@ Toko ini bukan sekadar tempat jual beli barang bekas, tetapi ruang yang mengharg
 
         <!-- Latest Products -->
         <section class="mx-auto max-w-7xl px-4 py-12">
-            <h2 class="text-center text-xl font-semibold">LATEST PRODUCTS</h2>
+            <h2 class="text-center text-2xl font-serif text-brown dark:text-cream">LATEST PRODUCTS</h2>
             <div
                 class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-8"
             >
                 <div
                     v-for="p in products"
                     :key="p.id"
-                    class="overflow-hidden rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 transition-colors"
+                    class="overflow-hidden rounded-xl border border-sage/40 bg-cream/30 dark:bg-darkbrown/40 shadow-sm hover:shadow-md transition"
                 >
                     <!-- Gambar produk menjadi tombol/link -->
                     <Link
                         :href="route('shop', p.id)" 
-                        class="block bg-gray-50 dark:bg-gray-800 transition-colors hover:opacity-90"
+                        class="block bg-offwhite/70 dark:bg-gray-800 transition hover:opacity-90"
                     >
                         <img
                             :src="p.image"
@@ -101,8 +101,8 @@ Toko ini bukan sekadar tempat jual beli barang bekas, tetapi ruang yang mengharg
                         />
                     </Link>
                     <div class="p-4">
-                        <h3 class="font-medium text-gray-900 dark:text-gray-100">{{ p.name }}</h3>
-                        <p class="mt-1 text-sm text-gray-700 dark:text-gray-400">
+                        <h3 class="font-serif text-lg text-brown dark:text-offwhite">{{ p.name }}</h3>
+                        <p class="mt-1 text-sm text-brown dark:text-offwhite">
                             $ {{ p.price }}
                         </p>
                     </div>
