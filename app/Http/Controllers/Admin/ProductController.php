@@ -8,30 +8,29 @@ use App\Models\ProductImage;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $q = $request->string('q')->toString(); // kata kunci search (opsional)
+        $q = $request->string('q')->toString();
 
         $products = Product::with([
-                'category.parent',                   // supaya path kategori tersedia di frontend
-                'images' => fn($q) => $q->ordered(), // urutkan sesuai sort_order
+                'category.parent',
+                'images' => fn($q) => $q->orderByDesc('is_primary')->orderBy('id'),
             ])
-            ->search($q)           // scope di Product (optional)
+            ->search($q)
             ->latest()
-            ->paginate(5)          // <= batas 5 per halaman
-            ->withQueryString();   // <= bawa query q ke pagination links
+            ->paginate(5)
+            ->withQueryString();
 
         return view('admin.products.index', compact('products', 'q'));
     }
 
     public function create()
     {
-        // HANYA SUBKATEGORI (parent_id tidak null) + load parent agar bisa ditampilkan "Parent > Sub"
         $categories = Category::whereNotNull('parent_id')
             ->with('parent:id,name')
             ->orderBy('name')
@@ -43,49 +42,43 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name'        => ['required','string','max:150'],
-            'description' => ['required','string'],
-            'price'       => ['required','numeric','min:1','max:9999999999999999.99'],
-            'stock'       => ['required','integer','min:1'],
-
-            // WAJIB SUBKATEGORI: exists categories.id dengan syarat parent_id NOT NULL
-            'category_id' => [
-                'required',
-                Rule::exists('categories','id')->where(fn($q) => $q->whereNotNull('parent_id')),
-            ],
-
-            'images'      => ['required','array','min:1','max:6'],
-            'images.*'    => ['required','image','mimes:jpg,jpeg,png,webp','max:2048'],
-        ], [
-            'category_id.exists' => 'Pilih subkategori (bukan kategori utama).',
+            'name'          => 'required|string|max:255',
+            'category_id'   => 'required|exists:categories,id',
+            'price'         => 'required|numeric|min:0',
+            'stock'         => 'required|integer|min:0',
+            'description'   => 'nullable|string',
+            'images.*'      => 'nullable|image|max:4096',
+            'primary_index' => 'nullable|integer|min:0',
         ]);
 
         DB::transaction(function () use ($data, $request) {
-            // simpan semua file ke disk 'public' → storage/app/public/products/...
-            $paths = [];
-            foreach ($request->file('images') as $file) {
-                $paths[] = $file->store('products', 'public'); // <— PENTING: disk 'public'
-            }
-
-            $primary = $paths[0] ?? null;
-
-            // simpan produk utama
+            // Simpan produk (hindari memasukkan key yang bukan kolom products)
             $product = Product::create([
                 'name'        => $data['name'],
-                'description' => $data['description'],
+                'category_id' => $data['category_id'],
                 'price'       => $data['price'],
                 'stock'       => $data['stock'],
-                'category_id' => $data['category_id'], // sudah dipastikan subkategori
-                'image_path'  => $primary,             // path cover (boleh null)
+                'description' => $data['description'] ?? null,
             ]);
 
-            // catat semua gambar ke tabel product_images
-            foreach ($paths as $i => $path) {
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_path' => $path,
-                    'sort_order' => $i,
-                ]);
+            // Upload gambar baru → simpan ke product_images.image_path
+            $uploaded = [];
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $i => $file) {
+                    $path = $file->store('products', 'public');
+                    $uploaded[] = ProductImage::create([
+                        'product_id' => $product->id,
+                        'image_path' => $path,   // ← gunakan image_path
+                        'is_primary' => false,
+                    ]);
+                }
+            }
+
+            // Set primary berdasarkan primary_index
+            if (count($uploaded)) {
+                $primaryIndex = (int) ($data['primary_index'] ?? 0);
+                $primaryIndex = max(0, min($primaryIndex, count($uploaded) - 1));
+                $uploaded[$primaryIndex]->update(['is_primary' => true]);
             }
         });
 
@@ -95,16 +88,12 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        // Dropdown kategori: HANYA SUBKATEGORI
         $categories = Category::whereNotNull('parent_id')
             ->with('parent:id,name')
             ->orderBy('name')
             ->get();
 
-        // load gambar terurut
-        $product->load([
-            'images' => fn($q) => $q->ordered(),
-        ]);
+        $product->load(['images' => fn($q) => $q->orderByDesc('is_primary')->orderBy('id')]);
 
         return view('admin.products.edit', compact('product','categories'));
     }
@@ -112,78 +101,89 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $data = $request->validate([
-            'name'        => ['required','string','max:150'],
-            'description' => ['required','string'],
-            'price'       => ['required','numeric','min:1','max:9999999999999999.99'],
-            'stock'       => ['required','integer','min:1'],
+            'name'             => 'required|string|max:255',
+            'category_id'      => 'required|exists:categories,id',
+            'price'            => 'required|numeric|min:0',
+            'stock'            => 'required|integer|min:0',
+            'description'      => 'nullable|string',
 
-            // Tetap wajib subkategori saat update
-            'category_id' => [
-                'required',
-                Rule::exists('categories','id')->where(fn($q) => $q->whereNotNull('parent_id')),
-            ],
+            // kelola gambar lama
+            'delete_images'    => 'array',
+            'delete_images.*'  => 'integer|exists:product_images,id',
+            'primary_image_id' => 'nullable|string', // id lama atau "new_0"
 
-            // APPEND MODE: tambah tanpa menghapus lama
-            'images'      => ['nullable','array','min:1','max:6'],
-            'images.*'    => ['image','mimes:jpg,jpeg,png,webp','max:2048'],
-        ], [
-            'category_id.exists' => 'Pilih subkategori (bukan kategori utama).',
+            // unggah gambar baru
+            'new_images.*'     => 'nullable|image|max:4096',
         ]);
 
         DB::transaction(function () use ($data, $request, $product) {
+            // Update field produk
             $product->update([
                 'name'        => $data['name'],
-                'description' => $data['description'],
+                'category_id' => $data['category_id'],
                 'price'       => $data['price'],
                 'stock'       => $data['stock'],
-                'category_id' => $data['category_id'], // sudah dipastikan subkategori
+                'description' => $data['description'] ?? null,
             ]);
 
-            if ($request->hasFile('images')) {
-                $product->load('images');
+            // 1) Hapus gambar lama yang dicentang
+            if (!empty($data['delete_images'])) {
+                $toDel = $product->images()->whereIn('id', $data['delete_images'])->get();
+                foreach ($toDel as $img) {
+                    if ($img->image_path && Storage::disk('public')->exists($img->image_path)) {
+                        Storage::disk('public')->delete($img->image_path);  // ← pakai image_path
+                    }
+                    $img->delete();
+                }
+            }
 
-                $existingCount = $product->images->count();
-                $newCount      = count($request->file('images'));
-                $total         = $existingCount + $newCount;
-
-                if ($total > 6) {
-                    throw ValidationException::withMessages([
-                        'images' => ["Total gambar melebihi batas (maks 6). Saat ini {$existingCount}, upload baru {$newCount} → total {$total}."],
+            // 2) Upload gambar baru → simpan ke image_path
+            $newMap = []; // key: "new_0" => ProductImage
+            if ($request->hasFile('new_images')) {
+                foreach ($request->file('new_images') as $i => $file) {
+                    $path = $file->store('products', 'public');
+                    $key  = "new_{$i}";
+                    $newMap[$key] = ProductImage::create([
+                        'product_id' => $product->id,
+                        'image_path' => $path,   // ← pakai image_path
+                        'is_primary' => false,
                     ]);
                 }
+            }
 
-                $startOrder = (int) ($product->images()->max('sort_order') ?? -1);
+            // 3) Reset semua primary
+            $product->images()->update(['is_primary' => false]);
 
-                $paths = [];
-                foreach ($request->file('images') as $file) {
-                    $paths[] = $file->store('products', 'public'); // <— disk 'public'
+            // 4) Tentukan primary dari pilihan (id lama / new_x)
+            $primaryKey = $data['primary_image_id'] ?? null;
+            $primaryImg = null;
+
+            if ($primaryKey) {
+                if (is_numeric($primaryKey)) {
+                    $primaryImg = $product->images()->where('id', $primaryKey)->first();
+                } elseif (isset($newMap[$primaryKey])) {
+                    $primaryImg = $newMap[$primaryKey];
                 }
+            }
 
-                foreach ($paths as $i => $path) {
-                    $product->images()->create([
-                        'image_path' => $path,
-                        'sort_order' => $startOrder + $i + 1,
-                    ]);
-                }
+            // fallback jika tidak ada yang dipilih
+            if (!$primaryImg) {
+                $primaryImg = $product->images()->first();
+            }
 
-                // jika belum ada cover, set dari gambar pertama yang baru diupload
-                if (empty($product->image_path)) {
-                    $product->update(['image_path' => $paths[0] ?? null]);
-                }
+            if ($primaryImg) {
+                $primaryImg->update(['is_primary' => true]);
             }
         });
 
         return redirect()->route('admin.products.index')
-            ->with('success', 'Product updated (images appended).');
+            ->with('success', 'Product updated successfully.');
     }
 
     public function destroy(Product $product)
     {
-        // Penting: gunakan Eloquent delete agar event model terpanggil.
-        // Pastikan di Model:
-        // - Product::booted() => deleting: loop $product->images()->delete()
-        // - ProductImage::booted() => deleting: Storage::disk('public')->delete($image_path)
-        $product->load('images'); // pre-load supaya hook punya data lengkap
+        // Eloquent delete akan memicu hook pada Product & ProductImage
+        $product->load('images');
         $product->delete();
 
         return back()->with('success', 'Product deleted successfully.');

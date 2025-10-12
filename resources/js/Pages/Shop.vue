@@ -3,30 +3,22 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import { ref, computed, watch } from 'vue';
 import SiteLayout from '@/Layouts/SiteLayout.vue';
 
-// Props dari backend (ShopController@shop)
+// Props dari backend
 const page = usePage();
 const products = page.props.products?.data ?? [];
 const links = page.props.products?.links ?? [];
 const roots = page.props.roots ?? [];
 const filters = page.props.filters ?? { q: '', root_id: '', sub_id: '' };
 
-// STATE pilihan filter (pakai v-model supaya dropdown reaktif)
+// STATE filter
 const selectedRootId = ref(filters.root_id ?? '');
 const selectedSubId = ref(filters.sub_id ?? '');
+watch(selectedRootId, () => (selectedSubId.value = ''));
 
-// reset sub jika root diganti
-watch(selectedRootId, () => {
-    selectedSubId.value = '';
-});
-
-// util: anak dari root tertentu
+// util kategori
 const subsOf = (rootId) =>
     roots.find((r) => String(r.id) === String(rootId))?.children ?? [];
-
-// semua subkategori dari semua root
 const allSubs = computed(() => roots.flatMap((r) => r.children ?? []));
-
-// sumber options subkategori: jika root dipilih => sub dari root tsb; kalau tidak => semua sub
 const subsList = computed(() =>
     selectedRootId.value ? subsOf(selectedRootId.value) : allSubs.value,
 );
@@ -44,8 +36,69 @@ const categoryPath = (p) => {
     return cat?.parent?.name ? `${cat.parent.name} → ${cat.name}` : cat.name;
 };
 
-// link detail: pakai slug kalau ada, fallback ke id
+// === NEW badge helper (≤ 14 hari)
+const isNew = (p, days = 14) => {
+    const d = p?.created_at ? new Date(p.created_at) : null;
+    if (!d || isNaN(d)) return false;
+    const diffDays = (Date.now() - d.getTime()) / 86400000;
+    return diffDays <= days;
+};
+
+// link detail
 const showHref = (p) => route('product.show', p.slug ?? p.id);
+
+// Add to cart
+async function addToCart(productId, qty = 1) {
+    const res = await fetch('/cart/items', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document
+                .querySelector('meta[name="csrf-token"]')
+                ?.getAttribute('content'),
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ product_id: productId, qty }),
+    });
+
+    if (res.ok) {
+        window.Swal?.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Ditambahkan ke cart',
+            timer: 1200,
+            showConfirmButton: false,
+        });
+        return;
+    }
+    let payload = null;
+    try {
+        payload = await res.json();
+    } catch {}
+    if (res.status === 401) window.location.href = route('login');
+    else if (res.status === 419) {
+        window.Swal?.fire({
+            icon: 'warning',
+            title: 'Sesi kedaluwarsa',
+            text: 'Silakan muat ulang halaman.',
+        }).then(() => window.location.reload());
+    } else if (res.status === 422 && payload?.error === 'qty_exceeds_stock') {
+        window.Swal?.fire({
+            icon: 'warning',
+            title: 'Stok tidak cukup',
+            html: payload?.message || 'Jumlah melebihi stok.',
+        });
+    } else {
+        window.Swal?.fire({
+            icon: 'error',
+            title: 'Gagal menambah',
+            text: payload?.message || 'Terjadi kesalahan.',
+        });
+    }
+}
 </script>
 
 <template>
@@ -53,17 +106,14 @@ const showHref = (p) => route('product.show', p.slug ?? p.id);
         <Head title="Shop" />
 
         <section class="mx-auto max-w-7xl px-4 py-10">
-            <div class="flex items-end justify-between gap-4">
-                <h1 class="text-2xl font-semibold">Shop</h1>
-            </div>
+            <h1 class="mb-6 text-2xl font-semibold">Shop</h1>
 
             <!-- Filter -->
             <form
                 method="GET"
                 :action="route('shop')"
-                class="mt-6 grid gap-3 sm:grid-cols-3"
+                class="grid gap-3 sm:grid-cols-3"
             >
-                <!-- Search -->
                 <input
                     type="text"
                     name="q"
@@ -71,8 +121,6 @@ const showHref = (p) => route('product.show', p.slug ?? p.id);
                     class="w-full rounded-md border px-3 py-2"
                     placeholder="Cari produk…"
                 />
-
-                <!-- Root category -->
                 <select
                     name="root_id"
                     v-model="selectedRootId"
@@ -83,8 +131,6 @@ const showHref = (p) => route('product.show', p.slug ?? p.id);
                         {{ r.name }}
                     </option>
                 </select>
-
-                <!-- Subcategory: jika root kosong => tampilkan SEMUA subkategori -->
                 <select
                     name="sub_id"
                     v-model="selectedSubId"
@@ -95,7 +141,6 @@ const showHref = (p) => route('product.show', p.slug ?? p.id);
                         {{ s.name }}
                     </option>
                 </select>
-
                 <div class="sm:col-span-3">
                     <button
                         class="mt-1 rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
@@ -105,60 +150,70 @@ const showHref = (p) => route('product.show', p.slug ?? p.id);
                     <Link
                         :href="route('shop')"
                         class="ml-3 text-sm text-gray-600 hover:text-gray-900"
+                        >Reset</Link
                     >
-                        Reset
-                    </Link>
                 </div>
             </form>
 
-            <!-- (Opsional) Deretan quick-pills subkategori saat root kosong -->
-            <div
-                v-if="!selectedRootId && subsList.length"
-                class="mx-auto mt-4 flex flex-wrap gap-2"
-            >
-                <Link
-                    v-for="s in subsList"
-                    :key="s.id"
-                    :href="route('shop', { sub_id: s.id })"
-                    class="rounded-full border px-3 py-1 text-sm hover:bg-gray-50"
-                >
-                    {{ s.name }}
-                </Link>
-            </div>
-
-            <!-- Grid Produk dari admin (kartu bisa diklik ke detail) -->
+            <!-- Grid Produk -->
             <div
                 class="xs:grid-cols-2 mt-8 grid gap-6 sm:grid-cols-3 lg:grid-cols-4"
             >
-                <article
+                <div
                     v-for="p in products"
                     :key="p.id"
-                    class="overflow-hidden rounded-xl border bg-white"
+                    class="relative overflow-hidden rounded-xl border bg-white transition hover:shadow-md"
                 >
-                    <Link :href="showHref(p)">
-                        <div class="bg-gray-50">
-                            <img
-                                :src="imgOf(p)"
-                                :alt="p.name"
-                                class="aspect-square w-full object-contain p-6"
-                            />
-                        </div>
-                    </Link>
+                    <!-- stretched link -->
+                    <Link
+                        :href="showHref(p)"
+                        aria-label="Lihat detail produk"
+                        class="absolute inset-0 z-10"
+                    />
+
+                    <!-- Gambar -->
+                    <div class="bg-gray-50 p-6">
+                        <img
+                            :src="imgOf(p)"
+                            :alt="p.name"
+                            class="aspect-square w-full object-contain"
+                        />
+                    </div>
+
+                    <!-- Body -->
                     <div class="p-4">
                         <Link
                             :href="showHref(p)"
-                            class="line-clamp-2 font-medium hover:underline"
+                            class="relative z-20 line-clamp-2 font-medium hover:underline"
+                            >{{ p.name }}</Link
                         >
-                            {{ p.name }}
-                        </Link>
                         <p class="mt-1 text-sm text-gray-600">
                             {{ categoryPath(p) }}
                         </p>
                         <p class="mt-1 font-semibold">
                             Rp {{ (p.price || 0).toLocaleString('id-ID') }}
                         </p>
+
+                        <button
+                            type="button"
+                            class="btn-primary relative z-20 mt-3 w-full"
+                            @click.stop="addToCart(p.id)"
+                        >
+                            Add to cart
+                        </button>
                     </div>
-                </article>
+
+                    <!-- BADGES -->
+                    <div
+                        class="pointer-events-none absolute left-3 top-3 z-20 space-y-1"
+                    >
+                        <span
+                            v-if="isNew(p)"
+                            class="rounded bg-indigo-600 px-2 py-0.5 text-[10px] font-medium text-white"
+                            >NEW ARRIVAL</span
+                        >
+                    </div>
+                </div>
 
                 <p
                     v-if="!products.length"

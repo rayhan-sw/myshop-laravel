@@ -2,41 +2,51 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
 class ProductImage extends Model
 {
+    use HasFactory;
+
+    /**
+     * Ganti nilai ini jika nama kolom path file di tabel berbeda
+     * (mis. 'filename' atau 'file').
+     */
+    public const COL_PATH = 'image_path';
+
     protected $fillable = [
         'product_id',
-        'image_path', // contoh: "products/abc.jpg" (disimpan di disk 'public')
-        'sort_order',
+        self::COL_PATH,     // gunakan konstanta, bukan hardcode string
+        'is_primary',
     ];
 
     protected $casts = [
         'product_id' => 'integer',
-        'sort_order' => 'integer',
+        'is_primary' => 'boolean',
     ];
 
-    // pastikan 'url' ikut terkirim ke Inertia/JSON
+    // Sertakan accessor 'url' saat toArray()/JSON
     protected $appends = ['url'];
 
-    // === HAPUS FILE FISIK SAAT RECORD DIHAPUS ===
     protected static function booted(): void
     {
+        // Hapus file fisik saat record dihapus
         static::deleting(function (ProductImage $img) {
-            if (!$img->image_path) return;
+            $path = $img->{self::COL_PATH} ?? '';
+            if (!$path) return;
 
-            // Normalisasi path
-            $path = trim(str_replace('\\', '/', $img->image_path));
-            $path = preg_replace('~^public/~i', '', $path); // hilangkan prefix "public/"
+            // Normalisasi path sebelum delete
+            $path = trim(str_replace('\\', '/', $path));
+            $path = preg_replace('~^/?storage/~i', '', $path); // buang prefix "/storage/"
+            $path = preg_replace('~^public/~i',   '', $path);  // buang prefix "public/"
 
-            // Hapus dari disk 'public' (abaikan jika tidak ada)
             try {
                 Storage::disk('public')->delete($path);
             } catch (\Throwable $e) {
-                // diamkan saja; kita tidak ingin blokir penghapusan record
+                // biarkan jika gagal; jangan blokir penghapusan record
             }
         });
     }
@@ -47,45 +57,28 @@ class ProductImage extends Model
     }
 
     /**
-     * URL publik untuk frontend.
-     * Menangani:
-     * - path absolute (http/https)
-     * - path yg sudah /storage/...
-     * - path relatif di disk 'public' (products/xxx.jpg)
-     * - path dengan backslash Windows -> jadi slash
+     * URL publik RELATIF untuk frontend.
+     * Selalu kembalikan path /storage/... agar ikut host & port saat ini.
      */
-    public function getUrlAttribute(): ?string
+    public function getUrlAttribute(): string
     {
-        $path = $this->image_path;
-        if (!$path) return null;
+        $path = $this->{self::COL_PATH} ?? '';
+        if (!$path) return '';
 
-        // Normalisasi: buang spasi & jadikan slash
+        // Normalisasi path agar tidak ganda
         $path = trim(str_replace('\\', '/', $path));
+        $path = preg_replace('~^/?storage/~i', '', $path); // hapus '/storage/' jika ada
+        $path = preg_replace('~^public/~i',   '', $path);  // hapus 'public/' jika ada
 
-        // Sudah absolute URL?
-        if (preg_match('~^https?://~i', $path)) {
-            return $path;
-        }
-
-        // Sudah mengarah ke /storage ?
-        if (preg_match('~^/?storage/~i', $path)) {
-            return asset(ltrim($path, '/'));
-        }
-
-        // Hilangkan prefix "public/" jika ada, supaya tidak dobel
-        $path = preg_replace('~^public/~i', '', $path);
-
-        // Jika file memang ada di disk 'public', gunakan URL resmi
-        if (Storage::disk('public')->exists($path)) {
-            return Storage::disk('public')->url($path); // -> /storage/{path}
-        }
-
-        // Fallback terakhir: konstruksi /storage/{path} apa adanya
-        return asset('storage/' . ltrim($path, '/'));
+        // Kembalikan URL relatif → otomatis ikut host/port (127.0.0.1:8000)
+        return '/storage/' . ltrim($path, '/');
     }
 
+    /**
+     * Urutkan primary dulu, lalu id (opsional).
+     */
     public function scopeOrdered($query)
     {
-        return $query->orderBy('sort_order')->orderBy('id');
+        return $query->orderByDesc('is_primary')->orderBy('id');
     }
 }

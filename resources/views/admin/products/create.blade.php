@@ -1,4 +1,5 @@
 @extends('admin.layouts.app')
+@section('title','Create Product')
 
 @section('content')
   <div class="mb-6">
@@ -25,7 +26,7 @@
 
       <div>
         <label class="block text-sm font-medium text-gray-700">Price</label>
-        <input id="price" type="number" name="price" required min="1" step="0.01" inputmode="decimal"
+        <input id="price" type="number" name="price" required min="0" step="0.01" inputmode="decimal"
                value="{{ old('price') }}"
                class="mt-1 block w-full rounded-md border px-3 py-2">
         <p id="priceRp" class="mt-1 text-xs text-gray-500">Rp 0</p>
@@ -34,7 +35,7 @@
 
       <div>
         <label class="block text-sm font-medium text-gray-700">Stock</label>
-        <input type="number" min="1" name="stock" value="{{ old('stock', 1) }}" required
+        <input type="number" min="0" name="stock" value="{{ old('stock', 0) }}" required
                class="mt-1 block w-full rounded-md border px-3 py-2">
         @error('stock') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
       </div>
@@ -44,31 +45,31 @@
         <select name="category_id" required class="mt-1 block w-full rounded-md border px-3 py-2">
           <option value="" disabled {{ old('category_id') ? '' : 'selected' }}>-- Select Category --</option>
           @foreach($categories as $c)
-            <option value="{{ $c->id }}" @selected(old('category_id') == $c->id)>{{ $c->name }}</option>
+            <option value="{{ $c->id }}" @selected(old('category_id') == $c->id)>
+              {{ $c->parent?->name ? ($c->parent->name.' → '.$c->name) : $c->name }}
+            </option>
           @endforeach
         </select>
-        @error('category_id') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
       </div>
 
-      {{-- Multi Images (1–6), foto pertama = primary (image_path), urutan file = sort_order --}}
+      {{-- Images + pilih Primary --}}
       <div class="sm:col-span-2">
-        <label class="block text-sm font-medium text-gray-700">Product Images (1–6)</label>
-        <input id="images" type="file" name="images[]" required multiple
-               accept="image/jpeg,image/png,image/webp"
+        <label class="block text-sm font-medium text-gray-700">Images</label>
+        <input type="file" name="images[]" accept="image/*" multiple
+               onchange="previewNewImages(this)"
                class="mt-1 block w-full rounded-md border px-3 py-2">
         <p class="mt-1 text-xs text-gray-500">
-          Pilih minimal 1, maksimal 6 foto. Format: JPG/PNG/WEBP, ukuran ≤ 2MB/foto.
+          Pilih beberapa foto (maks 6). Centang salah satu sebagai <b>Primary</b>.
         </p>
         @error('images') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
-        @error('images.*') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror>
+        @error('images.*') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
 
-        {{-- Preview grid (opsional, memudahkan melihat urutan yang akan menjadi sort_order) --}}
-        <div id="previewGrid" class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6"></div>
-        <p id="imgCount" class="mt-1 text-xs text-gray-500"></p>
+        <input type="hidden" name="primary_index" id="primary_index" value="0">
+        <div id="newImagePreview" class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6"></div>
       </div>
 
       <div class="sm:col-span-2 mt-2">
-        <button class="btn-primary rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
+        <button class="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
           Save Product
         </button>
         <a href="{{ route('admin.products.index') }}" class="ml-2 rounded px-4 py-2 text-sm text-gray-600 hover:bg-gray-100">
@@ -81,73 +82,40 @@
 
 @push('scripts')
 <script>
-  // Format Rupiah (maks 2 desimal agar konsisten dengan step=0.01)
-  const price = document.getElementById('price');
-  const priceRp = document.getElementById('priceRp');
-  const fmt = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 2 });
-  function updPrice() {
-    const v = Number(price.value || 0);
-    priceRp.textContent = fmt.format(v);
-  }
-  if (price && priceRp) {
-    price.addEventListener('input', updPrice);
-    updPrice();
-  }
+  (function(){
+    const price = document.getElementById('price');
+    const priceRp = document.getElementById('priceRp');
+    if (!price || !priceRp) return;
+    const fmt = new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', minimumFractionDigits:0 });
+    function upd(){ priceRp.textContent = fmt.format(Number(price.value || 0)); }
+    price.addEventListener('input', upd); upd();
+  })();
 
-  // Preview & guard jumlah file (maks 6) — urutan di sini mengikuti sort_order (0..n)
-  const inputImages = document.getElementById('images');
-  const previewGrid = document.getElementById('previewGrid');
-  const imgCount = document.getElementById('imgCount');
+  function previewNewImages(input) {
+    const container = document.getElementById('newImagePreview');
+    const primaryEl = document.getElementById('primary_index');
+    container.innerHTML = '';
 
-  function bytesToMB(b){ return (b / (1024*1024)).toFixed(2); }
+    let files = Array.from(input.files || []);
+    if (files.length > 6) { files = files.slice(0,6); }
 
-  function renderPreviews(files) {
-    previewGrid.innerHTML = '';
-    [...files].forEach((file, idx) => {
+    files.forEach((file, i) => {
       const url = URL.createObjectURL(file);
-      const wrap = document.createElement('div');
-      wrap.className = 'relative overflow-hidden rounded border';
+      const card = document.createElement('div');
+      card.className = 'rounded border p-2 text-center';
 
-      const badge = document.createElement('span');
-      badge.textContent = idx === 0 ? 'Primary (0)' : `#${idx}`;
-      badge.className = 'absolute left-1 top-1 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-medium text-white';
-
-      const img = document.createElement('img');
-      img.src = url;
-      img.alt = file.name;
-      img.className = 'h-24 w-full object-cover';
-
-      const cap = document.createElement('div');
-      cap.className = 'px-1 py-1 text-[10px] text-gray-600 truncate';
-      cap.textContent = `${file.name} • ${bytesToMB(file.size)} MB`;
-
-      wrap.appendChild(badge);
-      wrap.appendChild(img);
-      wrap.appendChild(cap);
-      previewGrid.appendChild(wrap);
+      card.innerHTML = `
+        <img src="${url}" class="mb-2 h-24 w-full rounded object-cover">
+        <label class="inline-flex items-center gap-1 text-sm">
+          <input type="radio" name="primary_radio" class="h-4 w-4" ${i===0?'checked':''}>
+          <span>Primary</span>
+        </label>
+      `;
+      card.querySelector('input[type="radio"]').addEventListener('change', () => primaryEl.value = i);
+      container.appendChild(card);
     });
-    if (imgCount) {
-      imgCount.textContent = files.length
-        ? `Total foto: ${files.length} (foto pertama jadi primary / sort_order = 0)`
-        : '';
-    }
-  }
 
-  if (inputImages) {
-    inputImages.addEventListener('change', (e) => {
-      const files = e.target.files;
-
-      // Batasi maksimal 6 file di sisi klien (server tetap memvalidasi)
-      if (files.length > 6) {
-        alert('Maksimal 6 foto.');
-        // Potong ke 6 (opsional: minta user pilih ulang)
-        const dt = new DataTransfer();
-        [...files].slice(0, 6).forEach(f => dt.items.add(f));
-        inputImages.files = dt.files;
-      }
-
-      renderPreviews(inputImages.files);
-    });
+    if (!files.length) primaryEl.value = 0;
   }
 </script>
 @endpush

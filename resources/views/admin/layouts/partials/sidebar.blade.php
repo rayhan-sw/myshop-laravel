@@ -18,5 +18,13 @@
          Products
       </a>
     </li>
+
+    <!-- ✅ Tambahan: Orders -->
+    <li>
+      <a href="{{ route('admin.orders.index') }}"
+         class="block rounded px-3 py-2 hover:bg-gray-100 {{ request()->routeIs('admin.orders.*') ? 'bg-gray-100 font-medium' : '' }}">
+         Orders
+      </a>
+    </li>
   </ul>
 </aside>
