@@ -105,32 +105,32 @@ async function addToCart(productId, qty = 1) {
 </script>
 
 <template>
-    <SiteLayout>
+<SiteLayout>
         <Head title="Home" />
 
         <!-- Hero -->
-        <section class="border-b bg-black">
+        <section class=" bg-sage dark:bg-brown pt-10">
             <div
                 class="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 lg:grid-cols-2"
             >
                 <div class="space-y-6 text-white">
-                    <h1 class="text-4xl/tight font-extrabold md:text-5xl/tight">
-                        Welcome To Our <br /><span class="text-indigo-400"
-                            >Gift Shop</span
-                        >
+                    <h1 class="text-brown dark:text-sage font-extrabold text-5xl/tight">
+                        Welcome To Our <br />
+                        <span class="text-offwhite">Gift Shop</span>
                     </h1>
-                    <p class="max-w-prose text-sm text-gray-300">
-                        Sequi perspiciatis nulla reiciendis, rem, tenetur
-                        impedit, eveniet non necessitatibus error distinctio
-                        mollitia suscipit. Nostrum fugit.
+                    <p class="max-w-prose text-sm text-brown dark:text-offwhite font-body">
+                       “Second Soul” berangkat dari gagasan bahwa setiap barang memiliki cerita dan kenangan dari pemilik sebelumnya. Saat berpindah tangan, barang itu tidak kehilangan nilainya - justru mendapatkan jiwa baru melalui makna yang diberikan oleh pemilik berikutnya.
+
+Toko ini bukan sekadar tempat jual beli barang bekas, tetapi ruang yang menghargai sejarah kecil di balik benda-benda sederhana. Setiap item punya perjalanan unik - dan pembeli adalah bagian dari kelanjutan kisah itu.
+
                     </p>
                     <div class="flex gap-3">
-                        <Link :href="route('contact')" class="btn-primary"
+                        <Link :href="route('contact')" class="inline-flex items-center justify-center font-body rounded-md border border-sage bg-brown text-sage px-4 py-2 hover:bg-offwhite hover:border-brown transition"
                             >Contact Us</Link
                         >
                         <Link
                             :href="route('shop')"
-                            class="inline-flex items-center justify-center rounded-md border border-indigo-200 px-4 py-2 text-indigo-200 hover:bg-white/10"
+                            class="inline-flex items-center justify-center font-body rounded-md border border-brown px-4 py-2 text-brown hover:bg-white/10"
                         >
                             Shop Now
                         </Link>
@@ -157,7 +157,7 @@ async function addToCart(productId, qty = 1) {
             <h2 class="text-center text-xl font-semibold">Produk</h2>
 
             <div
-                class="xs:grid-cols-2 mt-8 grid gap-6 sm:grid-cols-3 lg:grid-cols-4"
+                class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-8"
             >
                 <div
                     v-for="p in products"
@@ -194,13 +194,7 @@ async function addToCart(productId, qty = 1) {
                             Rp {{ (p.price || 0).toLocaleString('id-ID') }}
                         </p>
 
-                        <button
-                            type="button"
-                            class="relative z-20 mt-3 w-full rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition hover:bg-indigo-700"
-                            @click.stop="addToCart(p.id)"
-                        >
-                            Add to cart
-                        </button>
+                        
                     </div>
 
                     <!-- BADGES -->
@@ -210,7 +204,7 @@ async function addToCart(productId, qty = 1) {
                         <!-- NEW badge: warna sama dengan tombol -->
                         <span
                             v-if="isNew(p)"
-                            class="rounded bg-indigo-600 px-2 py-0.5 text-[10px] font-medium text-white"
+                            class="rounded bg-sage px-2 py-0.5 text-[10px] font-medium text-offwhite"
                         >
                             NEW ARRIVAL
                         </span>

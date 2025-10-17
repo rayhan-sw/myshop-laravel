@@ -105,7 +105,7 @@ async function addToCart(productId, qty = 1) {
     <SiteLayout>
         <Head title="Shop" />
 
-        <section class="mx-auto max-w-7xl px-4 py-10">
+        <section class="mx-auto max-w-7xl px-4 py-20">
             <h1 class="mb-6 text-2xl font-semibold">Shop</h1>
 
             <!-- Filter -->
@@ -118,13 +118,13 @@ async function addToCart(productId, qty = 1) {
                     type="text"
                     name="q"
                     :value="filters.q"
-                    class="w-full rounded-md border px-3 py-2"
+                    class="w-full rounded-md border px-3 py-2 font-body text-sm"
                     placeholder="Cari produk…"
                 />
                 <select
                     name="root_id"
                     v-model="selectedRootId"
-                    class="w-full rounded-md border px-3 py-2"
+                    class="w-full rounded-md border px-3 py-2 font-body text-sm"
                 >
                     <option :value="''">Semua Kategori Utama</option>
                     <option v-for="r in roots" :key="r.id" :value="r.id">
@@ -134,7 +134,7 @@ async function addToCart(productId, qty = 1) {
                 <select
                     name="sub_id"
                     v-model="selectedSubId"
-                    class="w-full rounded-md border px-3 py-2"
+                    class="w-full rounded-md border px-3 py-2 font-body text-sm"
                 >
                     <option :value="''">Semua Subkategori</option>
                     <option v-for="s in subsList" :key="s.id" :value="s.id">
@@ -143,13 +143,13 @@ async function addToCart(productId, qty = 1) {
                 </select>
                 <div class="sm:col-span-3">
                     <button
-                        class="mt-1 rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+                        class="mt-1 rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 font-body text-sm"
                     >
                         Terapkan Filter
                     </button>
                     <Link
                         :href="route('shop')"
-                        class="ml-3 text-sm text-gray-600 hover:text-gray-900"
+                        class="ml-3 text-sm text-gray-600 hover:text-gray-900 font-body text-sm"
                         >Reset</Link
                     >
                 </div>
@@ -157,7 +157,7 @@ async function addToCart(productId, qty = 1) {
 
             <!-- Grid Produk -->
             <div
-                class="xs:grid-cols-2 mt-8 grid gap-6 sm:grid-cols-3 lg:grid-cols-4"
+                class="grid-cols-2 mt-6 grid gap-6 sm:grid-cols-3 lg:grid-cols-4 "
             >
                 <div
                     v-for="p in products"
@@ -193,14 +193,6 @@ async function addToCart(productId, qty = 1) {
                         <p class="mt-1 font-semibold">
                             Rp {{ (p.price || 0).toLocaleString('id-ID') }}
                         </p>
-
-                        <button
-                            type="button"
-                            class="btn-primary relative z-20 mt-3 w-full"
-                            @click.stop="addToCart(p.id)"
-                        >
-                            Add to cart
-                        </button>
                     </div>
 
                     <!-- BADGES -->
@@ -224,7 +216,7 @@ async function addToCart(productId, qty = 1) {
             </div>
 
             <!-- Pagination -->
-            <nav v-if="links?.length" class="mt-8 flex flex-wrap gap-2">
+            <nav v-if="links?.length" class="mt-8 flex flex-wrap gap-2 font-body text-sm">
                 <Link
                     v-for="(l, i) in links"
                     :key="i"
