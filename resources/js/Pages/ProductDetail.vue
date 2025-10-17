@@ -201,7 +201,7 @@ onBeforeUnmount(() => {
         <div v-if="product && product.id">
             <Head :title="product.name || 'Product Detail'" />
 
-            <section class="mx-auto max-w-7xl p-6">
+            <section class="mx-auto max-w-7xl p-6 pt-[100px]">
                 <div class="grid gap-6 md:grid-cols-2">
                     <!-- Gallery -->
                     <div>

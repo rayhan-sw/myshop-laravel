@@ -4,31 +4,34 @@
   <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
     <h1 class="text-2xl font-semibold">Products</h1>
 
-    <div class="flex flex-wrap items-center gap-2">
-      {{-- Search form (GET) --}}
-      <form action="{{ route('admin.products.index') }}" method="GET" class="flex items-center gap-2">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
+      {{-- Search form --}}
+      <form action="{{ route('admin.products.index') }}" method="GET" class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
         <input
           type="text"
           name="q"
           value="{{ $q ?? request('q') }}"
           placeholder="Search name, desc, category..."
-          class="rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 text-sm w-64 shadow-sm"
+          class="rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 text-sm w-full sm:w-64 shadow-sm"
         />
-        <button
-          type="submit"
-          class="rounded-md bg-indigo-600 text-white px-4 py-2 text-sm font-medium hover:bg-indigo-700 transition">
-          Search
-        </button>
-        @if(($q ?? request('q')))
-          <a href="{{ route('admin.products.index') }}"
-             class="rounded-md bg-gray-100 text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-200 transition">
-            Reset
-          </a>
-        @endif
+        <div class="flex gap-2">
+          <button
+            type="submit"
+            class="rounded-md bg-indigo-600 text-white px-4 py-2 text-sm font-medium hover:bg-indigo-700 transition w-full sm:w-auto">
+            Search
+          </button>
+          @if(($q ?? request('q')))
+            <a href="{{ route('admin.products.index') }}"
+              class="rounded-md bg-gray-100 text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-200 transition w-full sm:w-auto text-center">
+              Reset
+            </a>
+          @endif
+        </div>
       </form>
 
+      {{-- Add Product --}}
       <a href="{{ route('admin.products.create') }}"
-         class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition">
+        class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition w-full sm:w-auto text-center">
         + Add Product
       </a>
     </div>
@@ -44,7 +47,7 @@
   @endif
 
   <div class="overflow-x-auto rounded-lg border bg-white">
-    <table class="min-w-[800px] w-full text-left text-sm">
+    <table class="min-w-full w-full text-left text-sm">
       <thead class="border-b bg-gray-50 text-gray-600">
         <tr>
           <th class="px-3 py-2">#</th>
@@ -59,12 +62,12 @@
       <tbody>
         @forelse($products as $p)
           <tr class="border-b last:border-0 align-middle hover:bg-gray-50 transition">
-            <td class="px-3 py-2">
+            <td class="px-2 py-1 sm:px-3 sm:py-2">
               {{ $loop->iteration + (($products->currentPage() - 1) * $products->perPage()) }}
             </td>
 
             {{-- Thumbnail (kuat: primaryImageUrl() -> first image url -> placeholder) --}}
-            <td class="px-3 py-2">
+            <td class="px-2 py-1 sm:px-3 sm:py-2">
               @php
                 $thumb = null;
                 try {
@@ -91,10 +94,10 @@
               @endif
             </td>
 
-            <td class="px-3 py-2">{{ $p->name }}</td>
-            <td class="px-3 py-2">{{ $p->category?->name ?? '—' }}</td>
-            <td class="px-3 py-2">{{ $p->price_formatted }}</td>
-            <td class="px-3 py-2">{{ $p->stock }}</td>
+            <td class="px-2 py-1 sm:px-3 sm:py-2">{{ $p->name }}</td>
+            <td class="px-2 py-1 sm:px-3 sm:py-2">{{ $p->category?->name ?? '—' }}</td>
+            <td class="px-2 py-1 sm:px-3 sm:py-2">{{ $p->price_formatted }}</td>
+            <td class="px-2 py-1 sm:px-3 sm:py-2">{{ $p->stock }}</td>
 
             <td class="px-3 py-2 text-right space-x-1">
               <a href="{{ route('admin.products.edit', $p) }}"

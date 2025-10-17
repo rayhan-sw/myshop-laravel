@@ -1,244 +1,160 @@
-{{-- resources/views/admin/orders/index.blade.php --}}
 @extends('admin.layouts.app')
 
 @section('title', 'Orders')
 
 @section('content')
-<div class="card shadow-sm">
-  <div class="card-body">
-    <h5 class="card-title mb-4 fw-bold text-indigo-600">
-       Orders Management
-    </h5>
+<div class="mb-6">
+  <h1 class="text-2xl font-semibold text-indigo-600 mb-2">Orders Management</h1>
 
-    {{-- Flash messages --}}
-    @if(session('success'))  <div class="alert alert-success">{{ session('success') }}</div> @endif
-    @if(session('warning'))  <div class="alert alert-warning">{{ session('warning') }}</div> @endif
-    @if($errors->any())      <div class="alert alert-danger">{{ $errors->first() }}</div> @endif
-
-    {{-- Tabs status (client-side, tanpa route baru) --}}
-    @php
-      $statuses = [
-        'all' => 'Semua',
-        'pending' => 'Pending',
-        'diproses' => 'Diproses',
-        'dikirim' => 'Dikirim',
-        'selesai' => 'Selesai',
-        'batal' => 'Batal'
-      ];
-    @endphp
-
-    {{-- ======= STATUS TABS ======= --}}
-    <div class="status-tabs-wrapper mb-4">
-      <ul class="nav nav-pills justify-content-start align-items-center gap-2 flex-nowrap overflow-auto pb-2" id="ordersTabs">
-        @foreach($statuses as $key => $label)
-          <li class="nav-item">
-            <a class="nav-link fw-medium py-2 px-4 rounded-pill"
-               href="#" data-tab="{{ $key }}">
-              {{ $label }}
-            </a>
-          </li>
-        @endforeach
-      </ul>
+  {{-- Flash messages --}}
+  @if(session('success'))
+    <div class="mb-3 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+      {{ session('success') }}
     </div>
-    {{-- ======= END STATUS TABS ======= --}}
+  @endif
+  @if(session('warning'))
+    <div class="mb-3 rounded border border-yellow-200 bg-yellow-50 px-3 py-2 text-sm text-yellow-800">
+      {{ session('warning') }}
+    </div>
+  @endif
+  @if($errors->any())
+    <div class="mb-3 rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">
+      {{ $errors->first() }}
+    </div>
+  @endif
 
-    {{-- Table --}}
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0 orders-table">
-        <thead class="table-light sticky-top" style="top:0; z-index:5;">
-          <tr class="text-nowrap">
-            <th>#</th>
-            <th>User</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>Alamat</th>
-            <th>Waktu</th>
-            <th>Items</th>
-            <th class="text-end">Aksi</th>
-          </tr>
-        </thead>
-        <tbody id="ordersBody">
-          @forelse ($orders as $order)
-            @php
-              $status = $order->status;
-              $badgeMap = [
-                'pending'  => 'bg-secondary',
-                'diproses' => 'bg-warning text-dark',
-                'dikirim'  => 'bg-info text-dark',
-                'selesai'  => 'bg-success',
-                'batal'    => 'bg-danger',
-              ];
-              $badgeClass = $badgeMap[$status] ?? 'bg-secondary';
-            @endphp
-            <tr data-status="{{ $status }}">
-              <td class="fw-semibold">#{{ $order->id }}</td>
-              <td>
-                <div class="fw-semibold">{{ $order->user?->name ?? '-' }}</div>
-                <div class="text-muted small">{{ $order->user?->email }}</div>
-              </td>
-              <td class="fw-semibold">Rp {{ number_format($order->total ?? 0, 0, ',', '.') }}</td>
+  {{-- Status tabs --}}
+  @php
+    $statuses = ['all'=>'Semua','pending'=>'Pending','diproses'=>'Diproses','dikirim'=>'Dikirim','selesai'=>'Selesai','batal'=>'Batal'];
+  @endphp
+  <div class="mb-4 overflow-x-auto">
+    <ul class="flex gap-2 whitespace-nowrap" id="ordersTabs">
+      @foreach($statuses as $key => $label)
+        <li>
+          <a href="#" data-tab="{{ $key }}"
+             class="inline-block px-4 py-2 rounded-full text-indigo-600 border border-gray-200 bg-gray-50 hover:bg-gray-100 transition">
+            {{ $label }}
+          </a>
+        </li>
+      @endforeach
+    </ul>
+  </div>
 
-              <td>
-                <div class="d-flex flex-wrap gap-2 align-items-center">
-                  <span class="badge {{ $badgeClass }} px-2">{{ ucfirst($status) }}</span>
-                  @if($status !== 'selesai')
-                    <form action="{{ route('admin.orders.update', $order) }}"
-                          method="POST"
-                          class="d-flex gap-2 align-items-center js-update-form mb-0">
-                      @csrf
-                      @method('PATCH')
-                      <select name="status" class="form-select form-select-sm w-auto">
-                        <option value="pending"  @selected($status==='pending')>Pending</option>
-                        <option value="diproses" @selected($status==='diproses')>Diproses</option>
-                        <option value="dikirim"  @selected($status==='dikirim')>Dikirim</option>
-                        <option value="selesai"  @selected($status==='selesai')>Selesai</option>
-                        <option value="batal"    @selected($status==='batal')>Batal</option>
-                      </select>
-                      <button type="submit" class="btn btn-primary btn-sm px-3">Update</button>
-                    </form>
-                  @endif
-                </div>
-              </td>
-
-              <td class="text-wrap" style="max-width:240px;">{{ $order->address_text ?: '—' }}</td>
-              <td>
-                <div>{{ $order->created_at?->format('d/m/Y H:i') }}</div>
-                <div class="text-muted small">{{ $order->created_at?->diffForHumans() }}</div>
-              </td>
-
-              <td class="text-wrap" style="max-width:300px;">
-                @foreach($order->items as $it)
-                  <div class="d-flex justify-content-between border-bottom py-1">
-                    <div><strong>{{ $it->product?->name ?? '—' }}</strong> ×{{ $it->qty }}</div>
-                    <div>Rp {{ number_format($it->subtotal ?? (($it->price ?? 0) * ($it->qty ?? 0)), 0, ',', '.') }}</div>
-                  </div>
-                @endforeach
-              </td>
-
-              <td class="text-end">
-                @if($order->status === 'selesai')
-                  <form action="{{ route('admin.orders.destroy', $order) }}"
-                        method="POST"
-                        class="d-inline js-delete mb-0">
-                    @csrf
-                    @method('DELETE')
-                    <button class="btn btn-danger btn-sm px-3">Hapus</button>
+  {{-- Table --}}
+  <div class="overflow-x-auto rounded-lg border bg-white">
+    <table class="min-w-full w-full text-left text-sm orders-table">
+      <thead class="bg-gray-50 text-gray-600 border-b sticky top-0 z-10">
+        <tr>
+          <th class="px-3 py-2">#</th>
+          <th class="px-3 py-2">User</th>
+          <th class="px-3 py-2">Total</th>
+          <th class="px-3 py-2">Status</th>
+          <th class="px-3 py-2">Alamat</th>
+          <th class="px-3 py-2">Waktu</th>
+          <th class="px-3 py-2">Items</th>
+          <th class="px-3 py-2 text-right">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="ordersBody">
+        @forelse ($orders as $order)
+          @php
+            $status = $order->status;
+            $badgeMap = [
+              'pending'=>'bg-gray-200 text-gray-800',
+              'diproses'=>'bg-yellow-200 text-yellow-800',
+              'dikirim'=>'bg-blue-200 text-blue-800',
+              'selesai'=>'bg-green-200 text-green-800',
+              'batal'=>'bg-red-200 text-red-800',
+            ];
+            $badgeClass = $badgeMap[$status] ?? 'bg-gray-200';
+          @endphp
+          <tr data-status="{{ $status }}" class="hover:bg-gray-50 transition">
+            <td class="px-3 py-2 font-medium">#{{ $order->id }}</td>
+            <td class="px-3 py-2">
+              <div class="font-medium">{{ $order->user?->name ?? '-' }}</div>
+              <div class="text-gray-500 text-xs">{{ $order->user?->email }}</div>
+            </td>
+            <td class="px-3 py-2 font-medium">Rp {{ number_format($order->total ?? 0,0,',','.') }}</td>
+            <td class="px-3 py-2">
+              <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                <span class="px-2 py-1 rounded {{ $badgeClass }}">{{ ucfirst($status) }}</span>
+                @if($status !== 'selesai')
+                  <form action="{{ route('admin.orders.update', $order) }}" method="POST" class="flex flex-col sm:flex-row sm:items-center gap-2">
+                    @csrf @method('PATCH')
+                    <select name="status" class="rounded border px-2 py-1 text-sm w-full sm:w-auto">
+                      @foreach($statuses as $key => $label)
+                        <option value="{{ $key }}" @selected($status===$key)>{{ $label }}</option>
+                      @endforeach
+                    </select>
+                    <button type="submit" class="rounded bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 text-sm">Update</button>
                   </form>
-                @else
-                  <span class="text-muted small">Update status untuk tindakan lain</span>
                 @endif
-              </td>
-            </tr>
-          @empty
-            <tr><td colspan="8" class="text-center text-muted py-4">Belum ada pesanan.</td></tr>
-          @endforelse
-        </tbody>
-      </table>
-    </div>
+              </div>
+            </td>
+            <td class="px-3 py-2 max-w-xs truncate">{{ $order->address_text ?: '—' }}</td>
+            <td class="px-3 py-2">
+              <div>{{ $order->created_at?->format('d/m/Y H:i') }}</div>
+              <div class="text-gray-500 text-xs">{{ $order->created_at?->diffForHumans() }}</div>
+            </td>
+            <td class="px-3 py-2 max-w-xs">
+              @foreach($order->items as $it)
+                <div class="flex justify-between border-b py-1">
+                  <div><strong>{{ $it->product?->name ?? '—' }}</strong> ×{{ $it->qty }}</div>
+                  <div>Rp {{ number_format($it->subtotal ?? (($it->price ?? 0)*($it->qty ?? 0)),0,',','.') }}</div>
+                </div>
+              @endforeach
+            </td>
+            <td class="px-3 py-2 text-right">
+              @if($order->status === 'selesai')
+                <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="inline js-delete">
+                  @csrf @method('DELETE')
+                  <button class="rounded bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-sm">Hapus</button>
+                </form>
+              @else
+                <span class="text-gray-500 text-xs">Update status untuk tindakan lain</span>
+              @endif
+            </td>
+          </tr>
+        @empty
+          <tr><td colspan="8" class="px-3 py-6 text-center text-gray-500">Belum ada pesanan.</td></tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
 
-    <div class="d-flex justify-content-end mt-3">
-      {{ $orders->links() }}
-    </div>
+  {{-- Pagination --}}
+  <div class="mt-4 flex justify-end">
+    {{ $orders->links() }}
   </div>
 </div>
 @endsection
-
-@push('styles')
-<style>
-  /* === STATUS TABS === */
-  #ordersTabs {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #c7d2fe transparent;
-  }
-  #ordersTabs::-webkit-scrollbar {
-    height: 6px;
-  }
-  #ordersTabs::-webkit-scrollbar-thumb {
-    background: #c7d2fe;
-    border-radius: 3px;
-  }
-  #ordersTabs .nav-item {
-    display: inline-block;
-  }
-  #ordersTabs .nav-link {
-    color: #4f46e5;
-    border: 1px solid #e5e7eb;
-    background: #f9fafb;
-    transition: all 0.2s ease-in-out;
-    white-space: nowrap;
-  }
-  #ordersTabs .nav-link:hover {
-    background: #ede9fe;
-    color: #4338ca;
-    border-color: #c7d2fe;
-  }
-  #ordersTabs .nav-link.active {
-    background: #4f46e5;
-    color: #fff !important;
-    border-color: #4f46e5;
-    box-shadow: 0 2px 6px rgba(79,70,229,0.25);
-  }
-
-  /* === TABLE === */
-  .orders-table td, .orders-table th { vertical-align: middle; }
-  .orders-table tbody tr + tr { border-top: 1px solid rgba(0,0,0,.05); }
-  .table-hover tbody tr:hover { background: #f9fafb; }
-
-  /* === BUTTONS === */
-  .btn-primary {
-    background-color: #4f46e5 !important;
-    border-color: #4f46e5 !important;
-  }
-  .btn-primary:hover {
-    background-color: #4338ca !important;
-    border-color: #4338ca !important;
-  }
-  .btn-danger {
-    background-color: #ef4444 !important;
-    border-color: #ef4444 !important;
-    color: #fff !important;
-  }
-  .btn-danger:hover {
-    background-color: #dc2626 !important;
-    border-color: #dc2626 !important;
-  }
-</style>
-@endpush
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const KEY = 'orders_active_tab';
-  const tabs = document.querySelectorAll('#ordersTabs .nav-link');
+  const tabs = document.querySelectorAll('#ordersTabs a');
   const tbody = document.getElementById('ordersBody');
 
   function setActiveTab(name) {
-    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+    tabs.forEach(t => t.classList.toggle('bg-indigo-600 text-white border-indigo-600', t.dataset.tab === name));
     const rows = tbody.querySelectorAll('tr[data-status]');
     rows.forEach(r => {
       const st = r.getAttribute('data-status');
-      r.style.display = (name === 'all' || st === name) ? '' : 'none';
+      r.style.display = (name==='all' || st===name) ? '' : 'none';
     });
     localStorage.setItem(KEY, name);
   }
 
-  const initial = localStorage.getItem(KEY) || 'all';
-  setActiveTab(initial);
+  setActiveTab(localStorage.getItem(KEY) || 'all');
   tabs.forEach(t => t.addEventListener('click', e => {
     e.preventDefault();
     setActiveTab(t.dataset.tab);
   }));
 
   // Konfirmasi hapus
-  document.querySelectorAll('form.js-delete').forEach(f => {
-    f.addEventListener('submit', e => {
+  document.querySelectorAll('form.js-delete').forEach(f=>{
+    f.addEventListener('submit', e=>{
       e.preventDefault();
       Swal.fire({
         title: 'Hapus order ini?',
@@ -248,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmButtonText: 'Ya, hapus',
         cancelButtonText: 'Batal',
         confirmButtonColor: '#ef4444'
-      }).then(res => res.isConfirmed && f.submit());
+      }).then(res=>res.isConfirmed && f.submit());
     });
   });
 });
