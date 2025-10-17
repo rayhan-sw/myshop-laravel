@@ -68,7 +68,7 @@ function go(i) {
     <SiteLayout>
         <Head title="Testimonial" />
 
-        <section class="mx-auto max-w-3xl px-4 py-10">
+        <section class="mx-auto max-w-3xl px-4 pt-[90px]">
             <h1 class="text-center text-2xl font-semibold">
                 What Our Customers Say
             </h1>

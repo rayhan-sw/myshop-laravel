@@ -411,12 +411,13 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
 
             <!-- Mobile dropdown menu -->
             <transition name="fade">
-                <div v-if="showMobileMenu" class="md:hidden absolute top-14 left-0 w-full border-t bg-white shadow-md z-30">
+                <div v-if="showMobileMenu" class=" rounded-lg md:hidden absolute top-14 left-0 w-full border-t bg-white shadow-md z-30">
                     <ul class="flex flex-col gap-2 px-4 py-3 text-sm">
-                    <li><Link :href="route('landing')" class="block py-2 hover:text-indigo-600" :class="{ 'text-indigo-600': is('landing') }">Home</Link></li>
-                    <li><Link :href="route('shop')" class="block py-2 hover:text-indigo-600" :class="{ 'text-indigo-600': is('shop') }">Shop</Link></li>
-                    <li><Link :href="route('why')" class="block py-2 hover:text-indigo-600" :class="{ 'text-indigo-600': is('why') }">Why Us</Link></li>                        <li><Link :href="route('testimonial')" class="block py-2 hover:text-indigo-600" :class="{ 'text-indigo-600': is('testimonial') }">Testimonials</Link></li>
-                    <li><Link :href="route('contact')" class="block py-2 hover:text-indigo-600" :class="{ 'text-indigo-600': is('contact') }">Contact</Link></li>
+                    <li><Link :href="route('landing')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-sage': is('landing') }">Home</Link></li>
+                    <li><Link :href="route('shop')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-sage': is('shop') }">Shop</Link></li>
+                    <li><Link :href="route('why')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-sage': is('why') }">Why Us</Link></li>                        
+                    <li><Link :href="route('testimonial')" class="block py-2 hover:text-sage" :class="{ 'text-indigo-600': is('testimonial') }">Testimonials</Link></li>
+                    <li><Link :href="route('contact')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-sage': is('contact') }">Contact</Link></li>
                     <li v-if="isAdmin"><Link :href="route('admin.dashboard')" class="block py-2 text-amber-600 hover:text-amber-700">Admin</Link></li>
                     </ul>
                 </div>
@@ -426,7 +427,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
             <transition name="fade">
             <div
                 v-if="showSearch"
-                class="border-b bg-white/90 dark:bg-gray-900/90 dark:border-gray-800 backdrop-blur-sm transition-colors"
+                class="rounded-2xl border-b bg-white/90 dark:bg-gray-900/90 dark:border-gray-800 backdrop-blur-2xl transition-colors"
             >
                 <div class="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2">
                 <input

@@ -105,7 +105,7 @@ async function addToCart(productId, qty = 1) {
     <SiteLayout>
         <Head title="Shop" />
 
-        <section class="mx-auto max-w-7xl px-4 py-20">
+        <section class="mx-auto max-w-7xl px-4 pt-[100px]">
             <h1 class="mb-6 text-2xl font-semibold">Shop</h1>
 
             <!-- Filter -->

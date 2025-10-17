@@ -48,7 +48,7 @@ function toggle(i) {
         <Head title="Why Us" />
 
         <!-- WHY CHOOSE US -->
-        <section class="mx-auto max-w-7xl px-4 py-10">
+        <section class="mx-auto max-w-7xl px-4 pt-[90px]">
             <h1 class="text-center text-2xl font-semibold">Why Choose Us</h1>
             <p class="mt-2 text-center text-gray-500">
                 Beberapa alasan mengapa toko kami jadi pilihan.

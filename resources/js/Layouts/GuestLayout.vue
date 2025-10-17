@@ -22,7 +22,7 @@ function toggleDarkMode() {
         class="flex min-h-screen flex-col items-center justify-center 
             bg-gray-100 text-gray-900 
             dark:bg-gray-900 dark:text-gray-100 
-            transition-colors duration-200 px-4"
+            transition-colors duration-200 px-4 "
     >
         <!-- Card -->
         <div 

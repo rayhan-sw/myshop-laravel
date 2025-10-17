@@ -31,9 +31,7 @@
 
       <div class="mx-auto flex w-full max-w-7xl gap-6 px-4 py-6">
         {{-- Sidebar kiri (sekali saja) --}}
-        <nav class="w-64 shrink-0" aria-label="Admin sidebar">
-          @include('admin.layouts.partials.sidebar')
-        </nav>
+        @include('admin.layouts.partials.sidebar')
 
         {{-- Konten utama halaman --}}
         <main class="min-h-[70vh] flex-1" role="main">

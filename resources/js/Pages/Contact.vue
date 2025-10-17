@@ -7,7 +7,7 @@ import SiteLayout from '@/Layouts/SiteLayout.vue';
     <SiteLayout>
         <Head title="Contact" />
 
-        <section class="mx-auto max-w-7xl px-4 py-12">
+        <section class="mx-auto max-w-7xl px-4 pt-[90px]">
             <h1 class="text-center text-2xl font-semibold">Contact Us</h1>
             <p class="mt-2 text-center text-gray-500">
                 Hubungi kami untuk pertanyaan, saran, atau kerja sama.
