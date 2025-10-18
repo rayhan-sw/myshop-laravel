@@ -150,14 +150,17 @@ async function addToCart(productId, qty = 1) {
                 <div class="space-y-6 text-white text-center lg:text-left">
                 <h1 class="text-brown dark:text-sage font-extrabold text-4xl md:text-5xl leading-tight">
                     Welcome To Our <br />
-                    <span class="text-offwhite">Gift Shop</span>
+                    <span class="text-offwhite">Thrift Shop</span>
                 </h1>
                 <p class="max-w-prose text-sm md:text-base text-brown dark:text-offwhite font-body mx-auto lg:mx-0">
-                    “Second Soul” berangkat dari gagasan bahwa setiap barang memiliki cerita dan kenangan dari pemilik sebelumnya...
+                    “Second Soul” berangkat dari gagasan bahwa setiap barang memiliki cerita dan kenangan dari pemilik sebelumnya. Saat berpindah tangan, barang itu tidak kehilangan nilainya — justru mendapatkan jiwa baru melalui makna yang diberikan oleh pemilik berikutnya.
+
+Toko ini bukan sekadar tempat jual beli barang bekas, tetapi ruang yang menghargai sejarah kecil di balik benda-benda sederhana. Setiap item punya perjalanan unik — dan pembeli adalah bagian dari kelanjutan kisah itu.
+
                 </p>
                 <div class="flex flex-wrap justify-center lg:justify-start gap-3">
-                    <Link :href="route('contact')" class="inline-flex items-center justify-center font-body rounded-md border border-sage bg-brown dark:bg-sage text-sage dark:text-brown px-4 py-2 hover:bg-offwhite hover:border-brown transition"> Contact Us </Link>
-                    <Link :href="route('shop')" class="inline-flex items-center justify-center font-body rounded-md border border-brown dark:border-sage px-4 py-2 text-brown dark:text-sage hover:bg-white/10"> Shop Now </Link>
+                    <Link :href="route('shop')" class="inline-flex items-center justify-center font-body rounded-md border border-sage bg-brown dark:bg-sage text-sage dark:text-brown px-4 py-2 hover:bg-offwhite hover:border-brown transition"> Shop Now </Link>
+                    <Link :href="route('contact')" class="inline-flex items-center justify-center font-body rounded-md border border-brown dark:border-sage px-4 py-2 text-brown dark:text-sage hover:bg-white/10"> Find Us </Link>
                 </div>
                 </div>
                 <!-- Image -->
@@ -184,13 +187,13 @@ async function addToCart(productId, qty = 1) {
             <!-- Overlay content -->
             <div class="absolute inset-0 bg-black/40 flex items-center justify-center z-10 px-4 text-center">
                 <div class="text-white max-w-2xl">
-                <h1 class="text-3xl md:text-5xl font-extrabold text-white">{{ slides[1].title }}</h1>
+                <h1 class="text-3xl md:text-5xl font-extrabold text-cream">{{ slides[1].title }}</h1>
                 <p class="mt-4 text-sm md:text-base text-gray-200">
                     Setiap produk punya cerita...
                 </p>
                 <div class="mt-6 flex justify-center gap-3 flex-wrap">
+                    <Link :href="route('shop')" class="inline-flex items-center justify-center font-body rounded-md border border-brown bg-sage px-4 py-2 text-brown hover:bg-cream"> Shop Now </Link>
                     <Link :href="route('contact')" class="inline-flex items-center justify-center font-body rounded-md border border-sage bg-brown text-sage px-4 py-2 hover:bg-offwhite hover:border-brown transition"> Contact Us </Link>
-                    <Link :href="route('shop')" class="inline-flex items-center justify-center font-body rounded-md border border-brown px-4 py-2 text-brown hover:bg-white/10"> Shop Now </Link>
                 </div>
                 </div>
             </div>
@@ -207,7 +210,7 @@ async function addToCart(productId, qty = 1) {
 
         <!-- Produk terbaru -->
         <section v-if="products.length" class="mx-auto max-w-7xl px-4 py-6">
-            <h1 class="text-center text-xl font-semibold dark:text-offwhite">Produk</h1>
+            <h1 class="text-center text-xl font-semibold dark:text-cream">Produk</h1>
 
             <div
                 class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-8"
@@ -268,7 +271,7 @@ async function addToCart(productId, qty = 1) {
             <div class="mt-8 text-center">
                 <Link
                     :href="route('shop')"
-                    class="inline-flex items-center rounded-md border bg-sage px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-sage/80 dark:bg-brown dark:hover:bg-brown/70 transition"
+                    class="inline-flex items-center rounded-md border dark:border-sage bg-sage px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-sage/80 dark:bg-brown dark:hover:bg-brown/70 transition"
                 >
                     View all Products
                 </Link>
@@ -277,10 +280,10 @@ async function addToCart(productId, qty = 1) {
 
         <!-- Why choose -->
         <section class="mx-auto max-w-7xl px-4 py-12">
-            <h2 class="text-center text-2xl font-semibold">
+            <h2 class="text-center text-2xl font-semibold text-brown dark:text-cream">
                 WHY CHOOSE OUR SHOP
             </h2>
-            <p class="mt-2 text-center text-gray-500">
+            <p class="mt-2 text-center text-gray-500 dark:text-offwhite">
                 Great products, fair prices, and fast delivery.
             </p>
             <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -294,8 +297,8 @@ async function addToCart(productId, qty = 1) {
                         :alt="f.title"
                         class="mx-auto h-16 w-16 object-contain dark:invert dark:brightness-200"
                     />
-                    <h3 class="mt-4 font-semibold">{{ f.title }}</h3>
-                    <p class="mt-1 text-sm text-gray-500">{{ f.desc }}</p>
+                    <h3 class="mt-4 font-semibold text-brown dark:text-cream">{{ f.title }}</h3>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-offwhite">{{ f.desc }}</p>
                 </div>
             </div>
         </section>

@@ -115,7 +115,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                     <li><Link :href="route('shop')" :class="{ 'text-brown dark:text-sage': is('shop') }" class="hover:text-sage">Shop</Link></li>
                     <li><Link :href="route('why')" :class="{ 'text-brown dark:text-sage': is('why') }" class="hover:text-sage">Why Us</Link></li>
                     <li><Link :href="route('testimonial')" :class="{ 'text-brown dark:text-sage': is('testimonial') }" class="hover:text-sage">Testimonials</Link></li>
-                    <li><Link :href="route('contact')" :class="{ 'text-brown dark:text-sage': is('contact') }" class="hover:text-sage">Contact</Link></li>
+                    <li><Link :href="route('contact')" :class="{ 'text-brown dark:text-sage': is('contact') }" class="hover:text-sage">Find Us</Link></li>
                     <li v-if="isAdmin"><a :href="route('admin.dashboard')" class="text-amber-600 hover:text-amber-700">Admin</a></li>
                 </ul>
 
@@ -333,7 +333,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                                     <!-- ✅ Tambahan: Pesanan Saya -->
                                     <Link
                                         :href="route('orders.index')"
-                                        class="block px-4 py-2 text-sm hover:bg-gray-50"
+                                         class="block px-4 py-2 text-sm hover:bg-gray-50 font-body"
                                         role="menuitem"
                                         @click="showAccount = false"
                                     >
@@ -434,7 +434,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                     <li><Link :href="route('shop')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-offwhite': is('shop') }">Shop</Link></li>
                     <li><Link :href="route('why')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-offwhite': is('why') }">Why Us</Link></li>                        
                     <li><Link :href="route('testimonial')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-offwhite': is('testimonial') }">Testimonials</Link></li>
-                    <li><Link :href="route('contact')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-offwhite': is('contact') }">Contact</Link></li>
+                    <li><Link :href="route('contact')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-offwhite': is('contact') }">Find Us</Link></li>
                     <li v-if="isAdmin"><Link :href="route('admin.dashboard')" class="block py-2 text-amber-600 hover:text-amber-700">Admin</Link></li>
                     </ul>
                 </div>

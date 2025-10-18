@@ -143,19 +143,19 @@ function confirmSwal(text) {
     <SiteLayout>
         <Head title="Your Cart" />
 
-        <section class="mx-auto max-w-7xl px-4 py-8">
-            <h1 class="text-2xl font-semibold">Your Cart</h1>
+        <section class="mx-auto max-w-7xl px-4 pt-[100px] pb-10">
+            <h1 class="text-2xl font-semibold text-brown dark:text-cream">Your Cart</h1>
 
             <div class="mt-6 grid gap-6 lg:grid-cols-[1fr,360px]">
                 <!-- Items -->
-                <div class="overflow-hidden rounded-xl border bg-white">
+                <div class="overflow-hidden rounded-xl border dark:border-sage bg-white dark:bg-darkbrown/40">
                     <table class="w-full text-sm">
-                        <thead class="bg-gray-50">
+                        <thead class="bg-gray-50 dark:bg-gray-800">
                             <tr>
-                                <th class="px-4 py-3 text-left">Product</th>
-                                <th class="px-4 py-3 text-left">Price</th>
-                                <th class="px-4 py-3 text-left">Qty</th>
-                                <th class="px-4 py-3 text-left">Subtotal</th>
+                                <th class="px-4 py-3 text-left text-brown dark:text-cream">Product</th>
+                                <th class="px-4 py-3 text-left text-brown dark:text-cream">Price</th>
+                                <th class="px-4 py-3 text-left text-brown dark:text-cream">Qty</th>
+                                <th class="px-4 py-3 text-left text-brown dark:text-cream">Subtotal</th>
                                 <th class="px-4 py-3"></th>
                             </tr>
                         </thead>
@@ -202,7 +202,7 @@ function confirmSwal(text) {
                                             -
                                         </button>
                                         <input
-                                            class="w-10 border-x px-2 py-1 text-center"
+                                            class="w-10 border-x px-2 py-1 text-center bg-white dark:bg-brown"
                                             :value="it.qty"
                                             disabled
                                         />
@@ -248,8 +248,8 @@ function confirmSwal(text) {
                 </div>
 
                 <!-- Summary -->
-                <aside class="rounded-xl border bg-white p-4">
-                    <div class="flex items-center justify-between">
+                <aside class="rounded-xl border bg-white dark:bg-darkbrown/40 p-4">
+                    <div class="flex items-center justify-between bg-ctext-brown dark:text-cream">
                         <div class="font-medium">Total</div>
                         <div class="text-lg font-semibold">
                             {{ money(total) }}
@@ -258,7 +258,7 @@ function confirmSwal(text) {
 
                     <!-- ✅ tombol ke checkout (Inertia router) -->
                     <button
-                        class="btn-primary mt-4 w-full"
+                        class="mt-3 w-full rounded-md border px-4 py-2 bg-sage hover:bg-sage/80 "
                         :disabled="!items.length"
                         @click="router.visit(route('checkout.form'))"
                     >

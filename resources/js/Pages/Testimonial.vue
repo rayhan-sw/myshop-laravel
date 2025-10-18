@@ -8,40 +8,22 @@ const basePhoto = '/theme/images/agency-img.jpg';
 
 const clients = [
     {
-        name: 'Sinta',
-        role: 'Customer',
-        photo: basePhoto,
-        text: 'Produk bagus dan cepat sampai!',
+        name: 'Tomo Dan Turah',
+        role: 'Influencer',
+        photo: '/theme/images/tomodanturah.jpg',
+        text: 'Kalian semua wajib pada kesini sih!!!! Gokil-gokil bajunya',
     },
     {
-        name: 'Budi',
-        role: 'Customer',
-        photo: basePhoto,
-        text: 'Pelayanan ramah, recommended.',
+        name: 'Livy Dan Jessica Jane',
+        role: 'Youtuber dan Tiktoker',
+        photo: '/theme/images/livydanjessicajane.jpg',
+        text: 'Jujur i suka semua sama produknya, Produknya masih bersih dan wangi-wangi walaupun barang thrift',
     },
     {
-        name: 'Andi',
-        role: 'Customer',
-        photo: basePhoto,
-        text: 'Harga pas, kualitas oke!',
-    },
-    {
-        name: 'Rina',
-        role: 'Customer',
-        photo: basePhoto,
-        text: 'Packing rapi, aman sampai.',
-    },
-    {
-        name: 'Doni',
-        role: 'Customer',
-        photo: basePhoto,
-        text: 'Respon cepat, mantap.',
-    },
-    {
-        name: 'Vina',
-        role: 'Customer',
-        photo: basePhoto,
-        text: 'Pas di kantong, kualitas sip.',
+        name: 'Jejouw Dan Mohan',
+        role: 'Owner THXINSOMNIA dan USS',
+        photo: '/theme/images/jejouwdanmohan.jpg',
+        text: 'GILAAAA Lu pada wajib kesini breeee, ni toko bakal gw adain di USSFeeds. Lo pada Dateng yeeee',
     },
 ];
 
@@ -68,14 +50,14 @@ function go(i) {
     <SiteLayout>
         <Head title="Testimonial" />
 
-        <section class="mx-auto max-w-3xl px-4 pt-[90px]">
-            <h1 class="text-center text-2xl font-semibold">
+        <section class="w-full px-4 pt-[90px] pb-10">
+            <h1 class="text-center text-2xl font-semibold text-brown dark:text-cream">
                 What Our Customers Say
             </h1>
 
             <!-- FRAME -->
             <div
-                class="relative mt-8 overflow-hidden rounded-xl border bg-white"
+                class="relative mt-8 overflow-hidden rounded-xl border border-sage/40 bg-cream/30 dark:bg-darkbrown/40"
             >
                 <!-- TRACK (jangan set width) -->
                 <div
@@ -88,17 +70,17 @@ function go(i) {
                         :key="i"
                         class="min-w-full shrink-0 p-8"
                     >
-                        <div class="mx-auto max-w-xl text-center">
+                        <div class="mx-auto max-w-7xl text-center">
                             <img
                                 :src="c.photo"
                                 :alt="c.name"
-                                class="mx-auto h-20 w-20 rounded-full object-cover"
+                                class="mx-auto h-[500px] w-[1500px] rounded-full object-cover"
                             />
-                            <p class="mt-4 text-sm italic text-gray-600">
+                            <p class="mt-4 text-sm italic text-gray-600 dark:text-offwhite">
                                 “{{ c.text }}”
                             </p>
-                            <p class="mt-2 font-medium">{{ c.name }}</p>
-                            <p class="text-xs text-gray-500">{{ c.role }}</p>
+                            <p class="mt-2 font-medium text-brown dark:text-cream">{{ c.name }}</p>
+                            <p class="text-xs text-gray-500 dark:text-offwhite">{{ c.role }}</p>
                         </div>
                     </div>
                 </div>

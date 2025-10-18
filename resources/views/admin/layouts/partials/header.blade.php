@@ -1,7 +1,7 @@
 <header class="sticky top-0 z-30 w-full border-b bg-white/80 backdrop-blur">
   <div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
     <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2">
-      <img src="/theme/images/logo.png" alt="Logo" class="h-6 w-auto">
+      <img src="/theme/icons/Vector 1.svg" alt="Logo" class="h-6 w-auto">
       <span class="font-semibold">Admin Panel</span>
     </a>
 

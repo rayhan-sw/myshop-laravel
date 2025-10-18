@@ -34,8 +34,8 @@ function badgeClass(status) {
 <template>
     <SiteLayout>
         <Head title="Pesanan Saya" />
-        <section class="mx-auto max-w-5xl px-4 py-8">
-            <h1 class="mb-4 text-2xl font-semibold">Pesanan Saya</h1>
+        <section class="mx-auto max-w-5xl px-4 py-8 pt-[92px]">
+            <h1 class="mb-4 text-2xl font-semibold text-brown dark:text-sage">Pesanan Saya</h1>
 
             <div
                 v-if="!orders.length"
@@ -50,19 +50,19 @@ function badgeClass(status) {
                 >.
             </div>
 
-            <div v-else class="space-y-4">
+            <div v-else class="space-y-4 text-brown dark:text-cream">
                 <!-- ✅ pakai nomor lokal per user -->
                 <div
                     v-for="(o, i) in orders"
                     :key="o.id"
-                    class="rounded-xl border bg-white p-5"
+                    class="rounded-xl border dark:border-sage bg-cream/30 dark:bg-darkbrown/40 p-5"
                 >
                     <div
                         class="flex flex-wrap items-center justify-between gap-3"
                     >
                         <div>
                             <p class="font-semibold">Order #{{ i + 1 }}</p>
-                            <p class="text-sm text-gray-500">
+                            <p class="text-sm text-gray-500 dark:text-offwhite">
                                 Tanggal:
                                 {{
                                     new Date(o.created_at).toLocaleString(
@@ -94,7 +94,7 @@ function badgeClass(status) {
                                 <p class="font-medium">
                                     {{ it.product?.name }}
                                 </p>
-                                <p class="text-sm text-gray-600">
+                                <p class="text-sm text-gray-600 dark:text-offwhite">
                                     x{{ it.qty }} · {{ money(it.price) }}
                                 </p>
                             </div>
@@ -102,7 +102,7 @@ function badgeClass(status) {
                         </div>
                     </div>
 
-                    <div class="mt-3 text-sm text-gray-600">
+                    <div class="mt-3 text-sm text-gray-600 dark:text-offwhite">
                         <p>
                             <span class="font-medium">Alamat:</span>
                             {{ o.address_text }}

@@ -49,8 +49,8 @@ function toggle(i) {
 
         <!-- WHY CHOOSE US -->
         <section class="mx-auto max-w-7xl px-4 pt-[90px]">
-            <h1 class="text-center text-2xl font-semibold">Why Choose Us</h1>
-            <p class="mt-2 text-center text-gray-500">
+            <h1 class="text-center text-2xl font-semibold text-brown dark:text-cream">Why Choose Us</h1>
+            <p class="mt-2 text-center text-gray-500 dark:text-offwhite">
                 Beberapa alasan mengapa toko kami jadi pilihan.
             </p>
 
@@ -65,16 +65,16 @@ function toggle(i) {
                         :alt="f.title"
                         class="mx-auto h-16 w-16 object-contain dark:invert dark:brightness-200"
                     />
-                    <h3 class="mt-4 font-semibold">{{ f.title }}</h3>
-                    <p class="mt-1 text-sm text-gray-500">{{ f.desc }}</p>
+                    <h3 class="mt-4 font-semibold text-brown dark:text-cream">{{ f.title }}</h3>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-offwhite">{{ f.desc }}</p>
                 </div>
             </div>
         </section>
 
         <!-- FAQ SECTION -->
         <section class="mx-auto max-w-3xl px-4 py-12">
-            <h2 class="text-center text-2xl font-semibold">FAQ</h2>
-            <p class="mt-2 text-center text-gray-500">
+            <h2 class="text-center text-2xl font-semibold text-brown dark:text-cream">FAQ</h2>
+            <p class="mt-2 text-center text-gray-500 dark:text-offwhite">
                 Pertanyaan yang sering ditanyakan pelanggan kami.
             </p>
 
@@ -95,7 +95,7 @@ function toggle(i) {
                     </button>
                     <p
                         v-if="openIndex === i"
-                        class="mt-2 text-sm text-gray-600"
+                        class="mt-2 text-sm text-gray-600 dark:text-offwhite"
                     >
                         {{ f.a }}
                     </p>

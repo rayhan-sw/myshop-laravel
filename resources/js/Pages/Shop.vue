@@ -63,7 +63,7 @@ document.addEventListener('click', () => {
     <Head title="Shop" />
 
     <section class="mx-auto max-w-7xl px-4 pt-[100px] pb-10">
-      <h1 class="mb-6 text-2xl font-semibold">Shop</h1>
+      <h1 class="mb-6 text-center text-2xl font-semibold text-brown dark:text-cream">Shop</h1>
 
       <!-- Filter -->
       <form
@@ -220,7 +220,7 @@ document.addEventListener('click', () => {
               class="relative z-20 line-clamp-2 font-medium hover:underline"
               >{{ p.name }}</Link
             >
-            <p class="mt-1 text-sm text-gray-600">
+            <p class="mt-1 text-sm text-gray-600 dark:text-offwhite">
               {{ categoryPath(p) }}
             </p>
             <p class="mt-1 font-semibold">
