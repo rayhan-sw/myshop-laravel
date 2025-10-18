@@ -162,7 +162,7 @@ async function addToCart(productId, qty = 1) {
                 </div>
                 <!-- Image -->
                 <div class="relative">
-                <img src="/theme/images/image3.jpeg" alt="Hero" class="w-full rounded-lg object-cover shadow max-h-[400px] mx-auto" />
+                <img src="/theme/images/secondsoulhero.png" alt="Hero" class="w-full rounded-lg object-cover  max-h-[700px] mx-auto" />
                 </div>
             </div>
             </div>
@@ -237,7 +237,7 @@ async function addToCart(productId, qty = 1) {
                     <div class="space-y-1 p-4">
                         <Link
                             :href="showHref(p)"
-                            class="relative z-20 font-medium text-indigo-700 hover:underline"
+                            class="relative z-20 font-medium  hover:underline"
                             >{{ p.name }}</Link
                         >
                         <p class="text-sm text-gray-500">
@@ -266,16 +266,19 @@ async function addToCart(productId, qty = 1) {
             </div>
 
             <div class="mt-8 text-center">
-                <Link :href="route('shop')" class="btn-primary inline-flex"
-                    >View all Products</Link
+                <Link
+                    :href="route('shop')"
+                    class="inline-flex items-center rounded-md border bg-sage px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-sage/80 dark:bg-brown dark:hover:bg-brown/70 transition"
                 >
+                    View all Products
+                </Link>
             </div>
         </section>
 
         <!-- Why choose -->
         <section class="mx-auto max-w-7xl px-4 py-12">
             <h2 class="text-center text-2xl font-semibold">
-                WHY CHOOSE MY SHOP
+                WHY CHOOSE OUR SHOP
             </h2>
             <p class="mt-2 text-center text-gray-500">
                 Great products, fair prices, and fast delivery.

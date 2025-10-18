@@ -62,10 +62,15 @@ const isAdmin = computed(() => {
 // SEARCH
 const showSearch = ref(false);
 const q = ref('');
+const searchQuery = ref('');
 function submitSearch() {
-    if (!q.value) return;
-    router.visit(route('shop'), { data: { q: q.value }, preserveState: true });
-    showSearch.value = false;
+  if (!searchQuery.value.trim()) return;
+  router.get(route('shop'), { q: searchQuery.value });
+  showSearch.value = false;
+}
+function handleSubmit(e) {
+  e.preventDefault();
+  router.get(route('shop'), { q: searchQuery.value });
 }
 
 // CART
@@ -324,6 +329,18 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                                     >
                                         Edit Profile
                                     </Link>
+
+                                    <!-- ✅ Tambahan: Pesanan Saya -->
+                                    <Link
+                                        :href="route('orders.index')"
+                                        class="block px-4 py-2 text-sm hover:bg-gray-50"
+                                        role="menuitem"
+                                        @click="showAccount = false"
+                                    >
+                                        Pesanan Saya
+                                    </Link>
+
+
                                     <Link
                                         :href="route('logout')"
                                         method="post"
@@ -425,27 +442,26 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
 
             <!-- Search bar -->
             <transition name="fade">
-            <div
-                v-if="showSearch"
-                class="rounded-2xl border-b bg-white/90 dark:bg-gray-900/90 dark:border-gray-800 backdrop-blur-2xl transition-colors"
-            >
-                <div class="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2">
-                <input
-                    v-model="q"
-                    type="search"
-                    placeholder="Search products…"
-                    class="w-full rounded-md border border-gray-300 dark:border-gray-700 
-                        bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 
-                        placeholder-gray-400 dark:placeholder-gray-500 
-                        px-3 py-2 transition-colors"
-                    @keyup.enter="submitSearch"
-                    aria-label="Search products"
-                />
-                <button class="btn-primary" @click="submitSearch">
-                    Search
-                </button>
+                <div
+                    v-if="showSearch"
+                    @click.stop
+                    class="rounded-2xl border-b bg-white/90 dark:bg-gray-900/90 dark:border-gray-800 backdrop-blur-2xl transition-colors"
+                >
+                    <div class="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2">
+                    <input
+                        v-model="searchQuery"
+                        type="search"
+                        placeholder="Search products…"
+                        class="w-full rounded-md border border-gray-300 dark:border-gray-700
+                            bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+                            placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2
+                            transition-colors"
+                        @keyup.enter="submitSearch"
+                        aria-label="Search products"
+                    />
+                    <button class="btn-primary" @click="submitSearch">Search</button>
+                    </div>
                 </div>
-            </div>
             </transition>
 
         </header>

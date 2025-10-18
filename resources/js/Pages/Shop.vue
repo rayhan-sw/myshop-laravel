@@ -71,16 +71,6 @@ document.addEventListener('click', () => {
         :action="route('shop')"
         class="grid gap-3 sm:grid-cols-3"
       >
-        <input
-          type="text"
-          name="q"
-          :value="filters.q"
-          class="w-full rounded-lg border border-gray-300 bg-white/70 px-3 py-2 
-                 font-body text-sm shadow-sm backdrop-blur-md hover:bg-white/90 
-                 dark:bg-gray-900/60 dark:text-gray-100 dark:border-gray-700 
-                 dark:hover:bg-gray-900/80"
-          placeholder="Cari produk…"
-        />
 
         <!-- ROOT CATEGORY DROPDOWN -->
         <div class="relative">
@@ -188,17 +178,18 @@ document.addEventListener('click', () => {
           </transition>
         </div>
 
-        <div class="sm:col-span-3">
-          <button
-            class="mt-1 rounded-md bg-sage dark:bg-brown px-4 py-2 text-white hover:bg-sage/40 dark:hover:bg-brown/40 font-body text-sm"
-          >
+        <div class="flex items-center gap-3">
+            <button
+            class="rounded-md bg-sage dark:bg-brown px-4 py-2 text-white hover:bg-sage/40 dark:hover:bg-brown/40 font-body text-sm"
+            >
             Terapkan Filter
-          </button>
-          <Link
+            </button>
+            <Link
             :href="route('shop')"
-            class="ml-3 text-sm text-gray-600 dark:text-offwhite hover:text-gray-900 dark:hover:text-cream font-body text-sm"
-            >Reset</Link
-          >
+            class="text-sm text-gray-600 dark:text-offwhite hover:text-gray-900 dark:hover:text-cream font-body text-sm"
+            >
+            Reset
+            </Link>
         </div>
       </form>
 
