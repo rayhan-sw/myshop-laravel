@@ -136,12 +136,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabs = document.querySelectorAll('#ordersTabs a');
   const tbody = document.getElementById('ordersBody');
 
+  // === [1] Fungsi filter tab (lokal + persist di localStorage) ===
   function setActiveTab(name) {
-    tabs.forEach(t => t.classList.toggle('bg-indigo-600 text-white border-indigo-600', t.dataset.tab === name));
-    const rows = tbody.querySelectorAll('tr[data-status]');
-    rows.forEach(r => {
+    tabs.forEach(t => {
+      const isActive = t.dataset.tab === name;
+      t.classList.toggle('bg-indigo-600', isActive);
+      t.classList.toggle('text-white', isActive);
+      t.classList.toggle('border-indigo-600', isActive);
+    });
+    tbody.querySelectorAll('tr[data-status]').forEach(r => {
       const st = r.getAttribute('data-status');
-      r.style.display = (name==='all' || st===name) ? '' : 'none';
+      r.style.display = (name === 'all' || st === name) ? '' : 'none';
     });
     localStorage.setItem(KEY, name);
   }
@@ -152,9 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setActiveTab(t.dataset.tab);
   }));
 
-  // Konfirmasi hapus
-  document.querySelectorAll('form.js-delete').forEach(f=>{
-    f.addEventListener('submit', e=>{
+  // === [2] Konfirmasi hapus (SweetAlert2) ===
+  document.querySelectorAll('form.js-delete').forEach(f => {
+    f.addEventListener('submit', e => {
       e.preventDefault();
       Swal.fire({
         title: 'Hapus order ini?',
@@ -163,10 +168,26 @@ document.addEventListener('DOMContentLoaded', () => {
         showCancelButton: true,
         confirmButtonText: 'Ya, hapus',
         cancelButtonText: 'Batal',
-        confirmButtonColor: '#ef4444'
-      }).then(res=>res.isConfirmed && f.submit());
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280'
+      }).then(res => {
+        if (res.isConfirmed) f.submit();
+      });
+    });
+  });
+
+  // === [3] Auto-flash scroll ke atas jika ada notifikasi ===
+  const flash = document.querySelector('.border-emerald-200, .border-yellow-200, .border-rose-200');
+  if (flash) window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // === [4] Form update status reload otomatis (optional UX improve) ===
+  document.querySelectorAll('form[action*="admin/orders/update"]').forEach(form => {
+    form.addEventListener('submit', () => {
+      setTimeout(() => window.location.reload(), 500);
     });
   });
 });
+
+
 </script>
 @endpush
