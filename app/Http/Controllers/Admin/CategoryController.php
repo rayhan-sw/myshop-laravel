@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    // LIST ROOT + tombol Manage Subcategories
+    // Daftar kategori root (beserta jumlah sub) + tombol kelola subkategori
     public function index()
     {
         $roots = Category::whereNull('parent_id')
@@ -19,10 +19,10 @@ class CategoryController extends Controller
         return view('admin.categories.index', compact('roots'));
     }
 
-    // HALAMAN SUB UNTUK 1 PARENT
+    // Halaman subkategori untuk satu parent (wajib root)
     public function show(Category $category) // $category = parent (root)
     {
-        abort_if(!is_null($category->parent_id), 404); // pastikan ini root
+        abort_if(!is_null($category->parent_id), 404); // Validasi: hanya root yang boleh ditampilkan
 
         $subs = $category->children()->orderBy('name')->paginate(10);
 
@@ -32,53 +32,57 @@ class CategoryController extends Controller
         ]);
     }
 
-    // CREATE (root atau sub)
+    // Buat kategori baru (root atau sub)
     public function store(Request $request)
     {
+        // Validasi dasar
         $data = $request->validate([
             'name'      => ['required','string','max:100'],
             'parent_id' => ['nullable','integer','exists:categories,id'],
         ]);
 
-        // Batasi level: kalau ada parent -> parent harus ROOT
+        // Batasi kedalaman: jika ada parent, parent harus root
         if (!empty($data['parent_id'])) {
             $isRoot = Category::where('id', $data['parent_id'])->whereNull('parent_id')->exists();
             if (!$isRoot) return back()->with('error','Parent harus kategori utama.')->withInput();
         }
 
-        // Unique per parent
+        // Unik per parent
         $exists = Category::where('name',$data['name'])
-            ->where('parent_id', $data['parent_id'] ?? null)->exists();
+            ->where('parent_id', $data['parent_id'] ?? null)
+            ->exists();
         if ($exists) return back()->with('error','Nama kategori sudah ada pada parent tersebut.')->withInput();
 
         $cat = Category::create($data);
 
-        // redirect: jika sub dibuat dari halaman parent, kembali ke halaman parent
+        // Arahkan sesuai konteks pembuatan (root/sub)
         if (!empty($data['parent_id'])) {
             return redirect()->route('admin.categories.show', $data['parent_id'])->with('success','Subcategory created.');
         }
         return redirect()->route('admin.categories.index')->with('success','Root category created.');
     }
 
+    // Ubah kategori (root atau sub)
     public function update(Request $request, Category $category)
     {
+        // Validasi dasar
         $data = $request->validate([
             'name'      => ['required','string','max:100'],
             'parent_id' => ['nullable','integer','exists:categories,id'],
         ]);
 
-        // Tidak boleh parent diri sendiri
+        // Cegah parent diri sendiri
         if (!empty($data['parent_id']) && (int)$data['parent_id'] === (int)$category->id) {
             return back()->with('error','Kategori tidak boleh menjadi parent dirinya sendiri.')->withInput();
         }
 
-        // Batasi level: parent harus root (atau null utk root)
+        // Batasi kedalaman: parent (jika ada) wajib root
         if (!empty($data['parent_id'])) {
             $isRoot = Category::where('id',$data['parent_id'])->whereNull('parent_id')->exists();
             if (!$isRoot) return back()->with('error','Parent harus kategori utama.')->withInput();
         }
 
-        // Unique per parent (abaikan diri sendiri)
+        // Unik per parent (abaikan diri sendiri)
         $exists = Category::where('name',$data['name'])
             ->where('parent_id',$data['parent_id'] ?? null)
             ->where('id','!=',$category->id)
@@ -87,16 +91,17 @@ class CategoryController extends Controller
 
         $category->update($data);
 
-        // redirect ke tempat yang pas
+        // Arahkan sesuai level kategori
         if (!is_null($category->parent_id)) {
             return redirect()->route('admin.categories.show', $category->parent_id)->with('success','Subcategory updated.');
         }
         return redirect()->route('admin.categories.index')->with('success','Root category updated.');
     }
 
+    // Hapus kategori (blokir root yang masih memiliki sub)
     public function destroy(Category $category)
     {
-        // Larang hapus ROOT yang masih punya sub
+        // Cegah hapus root yang masih punya sub
         if (is_null($category->parent_id) && $category->children()->exists()) {
             return back()->with('error','Hapus subkategori terlebih dahulu sebelum menghapus kategori utama.');
         }
@@ -104,7 +109,7 @@ class CategoryController extends Controller
         $parentId = $category->parent_id;
         $category->delete();
 
-        // redirect kembali ke halaman asal
+        // Arahkan kembali ke halaman asal (parent/root)
         if (!is_null($parentId)) {
             return redirect()->route('admin.categories.show', $parentId)->with('success','Subcategory deleted.');
         }

@@ -1,16 +1,17 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3'; // ⟵ sudah benar
+import { Head, Link, router } from '@inertiajs/vue3'; // navigasi Inertia + Link
 import SiteLayout from '@/Layouts/SiteLayout.vue';
 import { computed } from 'vue';
 
 const props = defineProps({
-    cart: { type: Object, required: true },
-    total: { type: Number, required: true },
+    cart: { type: Object, required: true }, // data keranjang aktif
+    total: { type: Number, required: true }, // total belanja (server-side)
 });
 
-const items = computed(() => props.cart?.items ?? []);
+const items = computed(() => props.cart?.items ?? []); // daftar item di keranjang
 
 function money(n) {
+    // format angka → Rupiah
     return new Intl.NumberFormat('id-ID', {
         style: 'currency',
         currency: 'IDR',
@@ -18,6 +19,7 @@ function money(n) {
 }
 
 async function patchQty(itemId, nextQty) {
+    // ubah qty item (PATCH ke server)
     const res = await fetch(route('cart.items.update', itemId), {
         method: 'PATCH',
         headers: {
@@ -26,12 +28,13 @@ async function patchQty(itemId, nextQty) {
             'X-Requested-With': 'XMLHttpRequest',
             'X-CSRF-TOKEN': document
                 .querySelector('meta[name="csrf-token"]')
-                .getAttribute('content'),
+                .getAttribute('content'), // token CSRF
         },
         body: JSON.stringify({ qty: nextQty }),
     });
 
     if (!res.ok) {
+        // tampilkan error jika gagal
         const j = await res.json().catch(() => ({}));
         if (window.Swal)
             Swal.fire({
@@ -41,11 +44,11 @@ async function patchQty(itemId, nextQty) {
             });
         return;
     }
-
-    window.location.reload();
+    window.location.reload(); // refresh agar sinkron dengan server
 }
 
 function inc(item) {
+    // tambah qty (+1 hingga batas stok)
     const max = Number(item.product?.stock ?? 1);
     const next = Math.min(Number(item.qty) + 1, max);
     if (next === Number(item.qty)) {
@@ -61,12 +64,14 @@ function inc(item) {
 }
 
 function dec(item) {
+    // kurangi qty (min 1)
     const next = Math.max(1, Number(item.qty) - 1);
     if (next === Number(item.qty)) return;
     patchQty(item.id, next);
 }
 
 async function removeItem(itemId) {
+    // hapus 1 item dari keranjang
     const ok = await confirmSwal('Hapus produk ini dari cart?');
     if (!ok) return;
 
@@ -94,6 +99,7 @@ async function removeItem(itemId) {
 }
 
 async function clearCart() {
+    // kosongkan semua item
     const ok = await confirmSwal('Kosongkan semua item di cart?');
     if (!ok) return;
 
@@ -107,6 +113,7 @@ async function clearCart() {
                 .getAttribute('content'),
         },
     });
+
     if (!res.ok) {
         if (window.Swal)
             Swal.fire({
@@ -120,13 +127,15 @@ async function clearCart() {
 }
 
 function imgOf(p) {
+    // pilih gambar utama produk → fallback placeholder
     const url = p?.images?.[0]?.url;
     if (url) return url;
-    const idx = Number(p?.id) % 8 || 1;
+    const idx = Number(p?.id) % 8 || 1; // placeholder lokal
     return `/theme/images/p${idx}.png`;
 }
 
 function confirmSwal(text) {
+    // konfirmasi standar (SweetAlert/confirm)
     if (!window.Swal) return Promise.resolve(confirm(text));
     return Swal.fire({
         title: 'Konfirmasi',
@@ -143,19 +152,39 @@ function confirmSwal(text) {
     <SiteLayout>
         <Head title="Your Cart" />
 
-        <section class="mx-auto max-w-7xl px-4 pt-[100px] pb-10">
-            <h1 class="text-2xl font-semibold text-brown dark:text-cream">Your Cart</h1>
+        <section class="mx-auto max-w-7xl px-4 pb-10 pt-[100px]">
+            <h1 class="text-2xl font-semibold text-brown dark:text-cream">
+                Your Cart
+            </h1>
 
             <div class="mt-6 grid gap-6 lg:grid-cols-[1fr,360px]">
                 <!-- Items -->
-                <div class="overflow-hidden rounded-xl border dark:border-sage bg-white dark:bg-darkbrown/40">
+                <div
+                    class="overflow-hidden rounded-xl border bg-white dark:border-sage dark:bg-darkbrown/40"
+                >
                     <table class="w-full text-sm">
                         <thead class="bg-gray-50 dark:bg-gray-800">
                             <tr>
-                                <th class="px-4 py-3 text-left text-brown dark:text-cream">Product</th>
-                                <th class="px-4 py-3 text-left text-brown dark:text-cream">Price</th>
-                                <th class="px-4 py-3 text-left text-brown dark:text-cream">Qty</th>
-                                <th class="px-4 py-3 text-left text-brown dark:text-cream">Subtotal</th>
+                                <th
+                                    class="px-4 py-3 text-left text-brown dark:text-cream"
+                                >
+                                    Product
+                                </th>
+                                <th
+                                    class="px-4 py-3 text-left text-brown dark:text-cream"
+                                >
+                                    Price
+                                </th>
+                                <th
+                                    class="px-4 py-3 text-left text-brown dark:text-cream"
+                                >
+                                    Qty
+                                </th>
+                                <th
+                                    class="px-4 py-3 text-left text-brown dark:text-cream"
+                                >
+                                    Subtotal
+                                </th>
                                 <th class="px-4 py-3"></th>
                             </tr>
                         </thead>
@@ -202,7 +231,7 @@ function confirmSwal(text) {
                                             -
                                         </button>
                                         <input
-                                            class="w-10 border-x px-2 py-1 text-center bg-white dark:bg-brown"
+                                            class="w-10 border-x bg-white px-2 py-1 text-center dark:bg-brown"
                                             :value="it.qty"
                                             disabled
                                         />
@@ -248,17 +277,21 @@ function confirmSwal(text) {
                 </div>
 
                 <!-- Summary -->
-                <aside class="rounded-xl border bg-white dark:bg-darkbrown/40 p-4">
-                    <div class="flex items-center justify-between bg-ctext-brown dark:text-cream">
+                <aside
+                    class="rounded-xl border bg-white p-4 dark:bg-darkbrown/40"
+                >
+                    <div
+                        class="bg-ctext-brown flex items-center justify-between dark:text-cream"
+                    >
                         <div class="font-medium">Total</div>
                         <div class="text-lg font-semibold">
                             {{ money(total) }}
                         </div>
                     </div>
 
-                    <!-- ✅ tombol ke checkout (Inertia router) -->
+                    <!-- ke halaman checkout -->
                     <button
-                        class="mt-3 w-full rounded-md border px-4 py-2 bg-sage hover:bg-sage/80 "
+                        class="mt-3 w-full rounded-md border bg-sage px-4 py-2 hover:bg-sage/80"
                         :disabled="!items.length"
                         @click="router.visit(route('checkout.form'))"
                     >

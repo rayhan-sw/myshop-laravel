@@ -6,7 +6,7 @@
     <h1 class="text-xl font-semibold">Dashboard</h1>
 </div>
 
-{{-- Cards --}}
+{{-- Ringkasan metrik utama --}}
 <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
     <div class="rounded-lg border bg-white p-4">
         <div class="text-xs text-gray-500">Total Income</div>
@@ -38,7 +38,7 @@
     </div>
 </div>
 
-{{-- Charts --}}
+{{-- Area grafik (penjualan & status) --}}
 <div class="mt-4 grid gap-4 md:grid-cols-1 lg:grid-cols-3">
     <div class="rounded-lg border bg-white p-4 lg:col-span-2">
         <div class="mb-2 font-medium">Sales (30 hari)</div>
@@ -54,7 +54,7 @@
     </div>
 </div>
 
-{{-- Popular Products & Top Categories --}}
+{{-- Produk populer & kategori teratas --}}
 <div class="mt-4 grid gap-4 md:grid-cols-1 lg:grid-cols-2">
     <div class="rounded-lg border bg-white p-4">
         <div class="mb-2 font-medium">Popular Products (qty)</div>
@@ -79,10 +79,11 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
+/* Data sumber grafik */
 const days   = @json(($chartDays ?? collect())->map(fn($d)=>date('d M', strtotime($d))));
 const series = @json($salesSeries ?? []);
 
-// LINE: Sales 30 hari
+/* Grafik garis: Penjualan 30 hari */
 const salesChart = new Chart(document.getElementById('salesChart'), {
     type: 'line',
     data: {
@@ -104,7 +105,7 @@ const salesChart = new Chart(document.getElementById('salesChart'), {
     }
 });
 
-// DOUGHNUT: Status
+/* Grafik donat: Komposisi status pesanan */
 const statusChart = new Chart(document.getElementById('statusChart'), {
     type: 'doughnut',
     data: {
@@ -116,7 +117,7 @@ const statusChart = new Chart(document.getElementById('statusChart'), {
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
 });
 
-// BAR: Produk Terpopuler
+/* Grafik batang: Produk terpopuler (berdasarkan qty) */
 const popularChart = new Chart(document.getElementById('popularChart'), {
     type: 'bar',
     data: {
@@ -126,7 +127,7 @@ const popularChart = new Chart(document.getElementById('popularChart'), {
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
 });
 
-// BAR: Kategori Teratas
+/* Grafik batang: Kategori teratas (berdasarkan qty) */
 const categoryChart = new Chart(document.getElementById('categoryChart'), {
     type: 'bar',
     data: {
@@ -136,15 +137,12 @@ const categoryChart = new Chart(document.getElementById('categoryChart'), {
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
 });
 
-// Resize chart saat window diubah ukuran
+/* Responsif saat jendela diubah ukurannya */
 window.addEventListener('resize', () => {
     salesChart.resize();
     statusChart.resize();
     popularChart.resize();
     categoryChart.resize();
 });
-
-
-
 </script>
 @endpush

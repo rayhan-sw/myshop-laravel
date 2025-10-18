@@ -11,11 +11,15 @@ class OrderItem extends Model
 
     protected $fillable = ['order_id', 'product_id', 'qty', 'price', 'subtotal'];
 
-    public function order() {
+    // Relasi item ini milik satu order
+    public function order()
+    {
         return $this->belongsTo(Order::class);
     }
 
-    public function product() {
+    // Relasi item ini merepresentasikan satu produk
+    public function product()
+    {
         return $this->belongsTo(Product::class);
     }
 }

@@ -10,7 +10,7 @@ use Inertia\Inertia;
 
 class ShopController extends Controller
 {
-    // HOME (opsional)
+    // Landing: kategori root + produk terbaru
     public function home()
     {
         $roots = Category::with(['children' => fn($q) => $q->orderBy('name')])
@@ -30,21 +30,21 @@ class ShopController extends Controller
         ]);
     }
 
-    // SHOP: listing + filter q, root_id, sub_id
+    // Listing katalog
     public function shop(Request $r)
     {
-        $q       = trim((string)$r->query('q', ''));
-        $rootId  = $r->integer('root_id') ?: null;
-        $subId   = $r->integer('sub_id')  ?: null;
+        $q       = trim((string)$r->query('q', '')); // pencarian nama
+        $rootId  = $r->integer('root_id') ?: null;  // filter kategori root
+        $subId   = $r->integer('sub_id')  ?: null; // filter subkategori
 
         $products = Product::with([
                 'category.parent',
                 'images' => fn($iq) => $iq->orderByDesc('is_primary')->orderBy('id'),
             ])
-            ->when(Schema::hasColumn('products','is_active'), fn($qq) => $qq->where('is_active', true))
-            ->when($q,      fn($qq) => $qq->where('name', 'like', "%{$q}%"))
-            ->when($rootId, fn($qq) => $qq->whereHas('category', fn($c) => $c->where('parent_id', $rootId)))
-            ->when($subId,  fn($qq) => $qq->where('category_id', $subId))
+            ->when(Schema::hasColumn('products','is_active'), fn($qq) => $qq->where('is_active', true)) // hanya aktif bila kolom ada
+            ->when($q,      fn($qq) => $qq->where('name', 'like', "%{$q}%"))  // filter nama
+            ->when($rootId, fn($qq) => $qq->whereHas('category', fn($c) => $c->where('parent_id', $rootId))) // filter root
+            ->when($subId,  fn($qq) => $qq->where('category_id', $subId))  // filter sub
             ->latest()
             ->paginate(12)
             ->withQueryString();
@@ -65,16 +65,16 @@ class ShopController extends Controller
         ]);
     }
 
-    // DETAIL PRODUCT (bind ke slug di routes: /product/{product:slug})
+    // Detail produk 
     public function show(Product $product)
     {
-        // muat relasi untuk detail
+        // Lengkapi relasi untuk tampilan detail
         $product->load([
             'images' => fn($iq) => $iq->orderByDesc('is_primary')->orderBy('id'),
             'category.parent',
         ]);
 
-        // RELATED: kategori sama, tidak termasuk dirinya, aktif jika ada kolom is_active
+        // Produk terkait satu kategori
         $related = Product::with([
                 'images' => fn($q) => $q->orderByDesc('is_primary')->orderBy('id'),
                 'category.parent',
@@ -86,9 +86,9 @@ class ShopController extends Controller
             ->take(8)
             ->get();
 
-        // render ke komponen yang ADA: resources/js/Pages/ProductDetail.vue
+        // Render ke komponen ProductDetail.vue
         return Inertia::render('ProductDetail', [
-            'product' => $product,  // pastikan field 'stock' ada di tabel; frontend sudah membaca product.stock
+            'product' => $product,  // frontend mengakses product.stock
             'related' => $related,
         ]);
     }

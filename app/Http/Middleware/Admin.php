@@ -8,22 +8,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 class Admin
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
+    // Middleware: membatasi akses hanya untuk admin
     public function handle(Request $request, Closure $next): Response
     {
-        // Belum login → arahkan ke login
+        // Jika belum login  arahkan ke halaman login
         if (! $request->user()) {
             return redirect()->route('login');
         }
 
-        // Bukan admin → tolak
+        // Jika sudah login tapi bukan admin  tolak akses
         if ($request->user()->role !== 'admin') {
             abort(403, 'Only admins can access this area.');
-            // Atau: return redirect()->route('dashboard');
         }
 
         return $next($request);

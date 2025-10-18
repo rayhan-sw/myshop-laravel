@@ -14,14 +14,14 @@ class AdminController extends Controller
 {
     public function index()
     {
-        // === METRIK DASAR ===
+        // Statistik umum
         $totalOrders     = Order::count();
         $totalProducts   = Product::count();
         $totalCategories = Category::count();
         $totalUsers      = User::count();
         $income          = (float) Order::where('status', 'selesai')->sum('total');
 
-        // === STATUS PESANAN ===
+        // Jumlah pesanan berdasarkan status
         $statusCounts = Order::select('status', DB::raw('COUNT(*) as c'))
             ->groupBy('status')
             ->pluck('c', 'status');
@@ -32,19 +32,20 @@ class AdminController extends Controller
         $selesai  = (int) ($statusCounts['selesai']  ?? 0);
         $batal    = (int) ($statusCounts['batal']    ?? 0);
 
-        // === PENJUALAN 30 HARI TERAKHIR ===
+        // Penjualan 30 hari terakhir (untuk grafik)
         $salesDaily = Order::where('created_at', '>=', now()->subDays(29)->startOfDay())
             ->select(DB::raw('DATE(created_at) as d'), DB::raw('SUM(total) as s'))
             ->groupBy('d')
             ->orderBy('d')
             ->get();
 
-        // siapkan urutan hari agar tidak bolong
-        $chartDays = collect(range(0, 29))->map(fn($i) => now()->subDays(29 - $i)->format('Y-m-d'));
-        $salesMap = $salesDaily->keyBy('d')->map(fn($r) => (float) $r->s);
+        $chartDays = collect(range(0, 29))
+            ->map(fn($i) => now()->subDays(29 - $i)->format('Y-m-d'));
+
+        $salesMap    = $salesDaily->keyBy('d')->map(fn($r) => (float) $r->s);
         $salesSeries = $chartDays->map(fn($d) => (float) ($salesMap[$d] ?? 0))->values();
 
-        // === PRODUK POPULER (berdasarkan jumlah terjual) ===
+        // Produk terpopuler (berdasarkan total terjual)
         $popular = OrderItem::select('product_id', DB::raw('SUM(qty) as q'))
             ->groupBy('product_id')
             ->orderByDesc('q')
@@ -52,7 +53,7 @@ class AdminController extends Controller
             ->take(6)
             ->get();
 
-        // === KATEGORI TERATAS ===
+        // Kategori teratas (berdasarkan jumlah produk terjual)
         $topCategories = OrderItem::join('products', 'order_items.product_id', '=', 'products.id')
             ->join('categories', 'products.category_id', '=', 'categories.id')
             ->select('categories.name', DB::raw('SUM(order_items.qty) as q'))
@@ -61,27 +62,20 @@ class AdminController extends Controller
             ->take(6)
             ->get();
 
-        // === KIRIM KE VIEW ===
+        // Kirim data ke view dashboard
         return view('admin.dashboard', [
-            // Data umum
             'totalOrders'     => $totalOrders,
             'totalProducts'   => $totalProducts,
             'totalCategories' => $totalCategories,
             'totalUsers'      => $totalUsers,
             'income'          => $income,
-
-            // Status
             'pending'         => $pending,
             'diproses'        => $diproses,
             'dikirim'         => $dikirim,
             'selesai'         => $selesai,
             'batal'           => $batal,
-
-            // Grafik
             'chartDays'       => $chartDays,
             'salesSeries'     => $salesSeries,
-
-            // Daftar populer
             'popular'         => $popular,
             'topCategories'   => $topCategories,
         ]);

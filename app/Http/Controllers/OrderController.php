@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
-    // ================== USER (tetap) ==================
+    // Daftar pesanan milik user (Inertia)
     public function index()
     {
         $orders = Order::with('items.product')
@@ -25,6 +25,7 @@ class OrderController extends Controller
         ]);
     }
 
+    // Form checkout: ambil cart user + total
     public function checkoutForm()
     {
         $cart = Cart::where('user_id', Auth::id())
@@ -37,6 +38,7 @@ class OrderController extends Controller
         ]);
     }
 
+    // Buat pesanan dari cart (transaksi: buat order, simpan item, kurangi stok, kosongkan cart)
     public function store(Request $request)
     {
         $request->validate([
@@ -54,6 +56,7 @@ class OrderController extends Controller
         DB::transaction(function () use ($cart, $request) {
             $total = 0;
 
+            // Buat order awal (total 0, status pending)
             $order = Order::create([
                 'user_id'      => Auth::id(),
                 'total'        => 0,
@@ -61,6 +64,7 @@ class OrderController extends Controller
                 'address_text' => $request->address_text,
             ]);
 
+            // Salin item dari cart ke order_items + kalkulasi total
             foreach ($cart->items as $item) {
                 $subtotal = $item->qty * $item->product->price;
                 $total   += $subtotal;
@@ -77,6 +81,7 @@ class OrderController extends Controller
                 $item->product->decrement('stock', $item->qty);
             }
 
+            // Perbarui total order dan kosongkan cart
             $order->update(['total' => $total]);
             $cart->items()->delete();
         });
@@ -84,25 +89,25 @@ class OrderController extends Controller
         return redirect()->route('orders.index')->with('success', 'Pesanan berhasil dibuat!');
     }
 
-    // ================== ADMIN (Blade) ==================
+    // Admin (Blade)
+
+    // Daftar semua order (admin) + paginate
     public function adminIndex()
     {
-        // paginate(10) + relasi user & items.product
         $orders = Order::with(['user', 'items.product'])
             ->latest()
             ->paginate(10);
 
-        // Blade admin
         return view('admin.orders.index', compact('orders'));
     }
 
+    // Ubah status order (batasi perubahan ketika sudah 'selesai')
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
             'status' => 'required|in:pending,diproses,dikirim,selesai,batal',
         ]);
 
-        // Jika sudah selesai, tidak boleh diubah selain tetap 'selesai'
         if ($order->status === 'selesai' && $request->status !== 'selesai') {
             return back()->with('warning', 'Order sudah selesai dan tidak dapat diubah.');
         }
@@ -112,10 +117,9 @@ class OrderController extends Controller
         return back()->with('success', 'Status diperbarui!');
     }
 
-    // Hapus riwayat (admin)
+    // Hapus order (admin) — diasumsikan FK cascade menghapus item
     public function destroy(Order $order)
     {
-        // Hapus beserta itemnya (diasumsikan FK cascade sudah di migration)
         $order->delete();
 
         return back()->with('success', 'Riwayat order dihapus.');

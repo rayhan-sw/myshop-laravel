@@ -11,11 +11,15 @@ class Order extends Model
 
     protected $fillable = ['user_id', 'total', 'status', 'address_text'];
 
-    public function items() {
+    // Relasi satu order punya banyak item
+    public function items()
+    {
         return $this->hasMany(OrderItem::class);
     }
 
-    public function user() {
+    // Relasi satu order dimiliki oleh satu user
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 }

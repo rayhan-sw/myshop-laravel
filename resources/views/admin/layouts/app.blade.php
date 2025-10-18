@@ -13,27 +13,28 @@
     </title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- Asset utama proyekmu --}}
+    {{-- Asset utama proyek --}}
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 
-    {{-- SweetAlert2 (CDN) --}}
+    {{-- SweetAlert2 (via CDN) --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
   </head>
+
   <body class="h-full bg-gray-50 font-sans text-gray-900 antialiased">
     <div class="min-h-screen">
-      {{-- Header global (sekali saja) --}}
+      {{-- Header utama admin --}}
       <header class="border-b bg-white" role="banner">
         @include('admin.layouts.partials.header')
       </header>
 
       <div class="mx-auto flex w-full max-w-7xl gap-6 px-4 py-6">
-        {{-- Sidebar kiri (sekali saja) --}}
+        {{-- Sidebar navigasi --}}
         @include('admin.layouts.partials.sidebar')
 
-        {{-- Konten utama halaman --}}
+        {{-- Area konten utama --}}
         <main class="min-h-[70vh] flex-1" role="main">
           @hasSection('breadcrumbs')
             <div class="mb-4 text-sm text-gray-500">
@@ -41,7 +42,7 @@
             </div>
           @endif
 
-          {{-- (opsional) fallback error block --}}
+          {{-- Blok error input (jika ada validasi gagal) --}}
           @if ($errors->any())
             <div class="mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800">
               <div class="font-medium">Ada masalah pada input:</div>
@@ -53,10 +54,12 @@
             </div>
           @endif
 
+          {{-- Konten halaman dinamis --}}
           @yield('content')
         </main>
       </div>
 
+      {{-- Footer global --}}
       <footer class="border-t bg-white" role="contentinfo">
         <div class="mx-auto max-w-7xl px-4 py-6 text-center text-sm text-gray-500">
           © {{ date('Y') }} Admin Panel — {{ config('app.name', 'Laravel') }}.
@@ -64,11 +67,10 @@
       </footer>
     </div>
 
-    {{-- Flash toast (success / warning / error) --}}
+    {{-- Notifikasi toast otomatis (success, warning, error) --}}
     @if (session('success') || session('warning') || session('error'))
       <script>
         document.addEventListener('DOMContentLoaded', () => {
-          // Pastikan SweetAlert2 sudah tersedia (script defer)
           const show = () => {
             Swal.fire({
               toast: true,
@@ -79,13 +81,12 @@
               title: @json(session('error') ?? session('warning') ?? session('success'))
             });
           };
-          // Jika Swal belum ada karena defer, coba sedikit delay
           if (window.Swal) show(); else setTimeout(show, 100);
         });
       </script>
     @endif
 
-    {{-- Konfirmasi default untuk form dengan class helper (opsional) --}}
+    {{-- Konfirmasi otomatis untuk form dengan class js-delete dan js-edit --}}
     <script>
       (function () {
         function bindSwal() {

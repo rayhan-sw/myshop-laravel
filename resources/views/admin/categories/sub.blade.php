@@ -1,6 +1,7 @@
 @extends('admin.layouts.app')
 
 @section('content')
+  {{-- Header halaman --}}
   <div class="mb-6">
     <h1 class="text-2xl font-semibold">
       Subcategories of: <span class="text-indigo-700">{{ $parent->name }}</span>
@@ -10,7 +11,7 @@
     </div>
   </div>
 
-  {{-- Flash Messages --}}
+  {{-- Pesan notifikasi (Flash Messages) --}}
   @if(session('success'))
     <div class="mb-4 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
       {{ session('success') }}
@@ -22,7 +23,7 @@
     </div>
   @endif
 
-  {{-- Form tambah SUB --}}
+  {{-- Form tambah subkategori --}}
   <div class="mb-6 rounded-lg border bg-white p-4">
     <form action="{{ route('admin.categories.store') }}" method="POST" class="flex flex-col sm:flex-row gap-3 sm:items-center">
       @csrf
@@ -35,7 +36,7 @@
     @error('name')<p class="mt-2 text-sm text-rose-600">{{ $message }}</p>@enderror
   </div>
 
-  {{-- Tabel SUB --}}
+  {{-- Tabel daftar subkategori --}}
   <div class="overflow-x-auto rounded-lg border bg-white">
     <table class="min-w-full w-full text-left text-sm">
       <thead class="border-b bg-gray-50 text-gray-600">
@@ -54,7 +55,8 @@
             <td class="px-2 py-2 sm:px-3 sm:py-2">{{ $sub->created_at?->format('Y-m-d H:i') }}</td>
             <td class="px-2 py-2 sm:px-3 sm:py-2 text-right">
               <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end space-y-1 sm:space-y-0 sm:space-x-1">
-                {{-- Edit SUB --}}
+
+                {{-- Form edit subkategori --}}
                 <details class="inline-block text-left">
                   <summary class="inline cursor-pointer rounded px-3 py-1 text-indigo-600 hover:bg-indigo-50 text-center">Edit</summary>
                   <form method="POST" action="{{ route('admin.categories.update', $sub) }}" class="mt-2 flex flex-col sm:flex-row sm:items-center gap-2">
@@ -65,7 +67,7 @@
                   </form>
                 </details>
 
-                {{-- Delete SUB --}}
+                {{-- Tombol hapus subkategori --}}
                 <form action="{{ route('admin.categories.destroy', $sub) }}" method="POST" class="inline js-delete">
                   @csrf @method('DELETE')
                   <button class="rounded px-3 py-1 text-rose-600 hover:bg-rose-50 text-center">Delete</button>

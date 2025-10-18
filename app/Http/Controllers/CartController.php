@@ -11,7 +11,7 @@ use Inertia\Inertia;
 
 class CartController extends Controller
 {
-    /** Ambil/buat cart milik user yang login */
+    // Ambil/buat keranjang milik user yang sedang login
     protected function userCart(): Cart
     {
         return Cart::firstOrCreate(['user_id' => Auth::id()]);
@@ -19,11 +19,13 @@ class CartController extends Controller
 
     public function index()
     {
+        // Muat keranjang beserta relasi produk, gambar, dan kategori
         $cart = $this->userCart()->load([
             'items.product.images',
             'items.product.category.parent',
         ]);
 
+        // Hitung total harga saat ini (price × qty)
         $total = $cart->items->sum(fn ($i) => (float) $i->product->price * (int) $i->qty);
 
         return Inertia::render('Cart', [
@@ -32,7 +34,7 @@ class CartController extends Controller
         ]);
     }
 
-    /** Tambah item ke cart (validasi JSON, batasi stok & gabung dengan qty yang sudah ada) */
+    // Tambah item ke keranjang; validasi input, cek stok, gabungkan qty jika sudah ada
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -43,6 +45,7 @@ class CartController extends Controller
         $product = Product::findOrFail($data['product_id']);
         $qtyReq  = (int) $data['qty'];
 
+        // Tolak jika stok kosong
         if ((int) $product->stock < 1) {
             return response()->json([
                 'ok'      => false,
@@ -54,12 +57,12 @@ class CartController extends Controller
         $cart = $this->userCart();
         $item = $cart->items()->where('product_id', $product->id)->first();
 
-        $current = (int) ($item?->qty ?? 0);
-        $newQty  = $current + $qtyReq;
-        $max     = (int) $product->stock;
+        $current = (int) ($item?->qty ?? 0); // qty yang sudah ada di keranjang
+        $newQty  = $current + $qtyReq;       // qty setelah penambahan
+        $max     = (int) $product->stock;    // batas stok
 
+        // Batasi agar tidak melebihi stok
         if ($newQty > $max) {
-            // kirim 422 agar front-end bisa munculkan SweetAlert (tanpa redirect)
             return response()->json([
                 'ok'       => false,
                 'error'    => 'qty_exceeds_stock',
@@ -70,6 +73,7 @@ class CartController extends Controller
             ], 422);
         }
 
+        // Update jika sudah ada, atau buat item baru
         if ($item) {
             $item->update(['qty' => $newQty]);
         } else {
@@ -87,11 +91,10 @@ class CartController extends Controller
         ], 201);
     }
 
-    /** Ubah qty (wajib <= stok) */
+    // Ubah qty item; pastikan milik user dan tidak melebihi stok
     public function update(Request $request, CartItem $item)
     {
-        // pastikan item milik user
-        if ($item->cart->user_id !== Auth::id()) abort(403);
+        if ($item->cart->user_id !== Auth::id()) abort(403); // proteksi kepemilikan
 
         $data = $request->validate([
             'qty' => ['required','integer','min:1'],
@@ -100,6 +103,7 @@ class CartController extends Controller
         $max    = (int) $item->product->stock;
         $newQty = (int) $data['qty'];
 
+        // Validasi batas stok
         if ($newQty > $max) {
             return response()->json([
                 'ok'      => false,
@@ -118,16 +122,16 @@ class CartController extends Controller
         ]);
     }
 
-    /** Hapus satu item */
+    // Hapus satu item dari keranjang
     public function destroy(CartItem $item)
     {
-        if ($item->cart->user_id !== Auth::id()) abort(403);
+        if ($item->cart->user_id !== Auth::id()) abort(403); // proteksi kepemilikan
 
         $item->delete();
         return response()->json(['ok' => true]);
     }
 
-    /** Kosongkan cart */
+    // Kosongkan seluruh item pada keranjang user
     public function clear()
     {
         $cart = $this->userCart();

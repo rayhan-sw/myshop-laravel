@@ -5,7 +5,7 @@
     <h1 class="text-2xl font-semibold">Products</h1>
 
     <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
-      {{-- Search form --}}
+      {{-- Form pencarian produk --}}
       <form action="{{ route('admin.products.index') }}" method="GET" class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
         <input
           type="text"
@@ -29,7 +29,7 @@
         </div>
       </form>
 
-      {{-- Add Product --}}
+      {{-- Tombol tambah produk --}}
       <a href="{{ route('admin.products.create') }}"
         class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition w-full sm:w-auto text-center">
         + Add Product
@@ -37,7 +37,7 @@
     </div>
   </div>
 
-  {{-- Info hasil pencarian --}}
+  {{-- Informasi hasil pencarian --}}
   @if(($q ?? request('q')))
     <div class="mb-3 text-sm text-gray-600">
       Showing results for: <span class="font-medium">"{{ $q ?? request('q') }}"</span>
@@ -66,7 +66,7 @@
               {{ $loop->iteration + (($products->currentPage() - 1) * $products->perPage()) }}
             </td>
 
-            {{-- Thumbnail (kuat: primaryImageUrl() -> first image url -> placeholder) --}}
+            {{-- Thumbnail produk (prioritas: primaryImageUrl -> first image -> placeholder) --}}
             <td class="px-2 py-1 sm:px-3 sm:py-2">
               @php
                 $thumb = null;
@@ -76,7 +76,7 @@
                   }
                 } catch (\Throwable $e) {}
                 if (!$thumb) {
-                  $thumb = optional($p->images->first())->url; // butuh accessor 'url' di ProductImage
+                  $thumb = optional($p->images->first())->url; // accessor 'url' pada ProductImage
                 }
               @endphp
 
@@ -99,13 +99,14 @@
             <td class="px-2 py-1 sm:px-3 sm:py-2">{{ $p->price_formatted }}</td>
             <td class="px-2 py-1 sm:px-3 sm:py-2">{{ $p->stock }}</td>
 
+            {{-- Aksi edit / hapus --}}
             <td class="px-3 py-2 text-right space-x-1">
               <a href="{{ route('admin.products.edit', $p) }}"
                  class="rounded px-3 py-1 text-indigo-600 hover:bg-indigo-50 font-medium transition">
                 Edit
               </a>
 
-              {{-- Hapus pakai SweetAlert: gunakan class js-delete, jangan pakai confirm() --}}
+              {{-- Hapus dengan SweetAlert (gunakan .js-delete) --}}
               <form action="{{ route('admin.products.destroy', $p) }}" method="POST" class="inline js-delete">
                 @csrf
                 @method('DELETE')
@@ -126,18 +127,18 @@
     </table>
   </div>
 
-  {{-- Pagination styled --}}
+  {{-- Paginasi (styled) --}}
   <div class="mt-6 flex justify-center">
     @if ($products->hasPages())
       <nav role="navigation" aria-label="Pagination Navigation" class="flex items-center gap-1">
-        {{-- Previous --}}
+        {{-- Tombol sebelumnya --}}
         @if ($products->onFirstPage())
           <span class="px-3 py-1.5 rounded bg-gray-200 text-gray-500 cursor-default">&lt;</span>
         @else
           <a href="{{ $products->previousPageUrl() }}" class="px-3 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition">&lt;</a>
         @endif
 
-        {{-- Page numbers --}}
+        {{-- Nomor halaman --}}
         @foreach ($products->getUrlRange(1, $products->lastPage()) as $page => $url)
           @if ($page == $products->currentPage())
             <span class="px-3 py-1.5 rounded bg-indigo-600 text-white font-medium">{{ $page }}</span>
@@ -146,7 +147,7 @@
           @endif
         @endforeach
 
-        {{-- Next --}}
+        {{-- Tombol berikutnya --}}
         @if ($products->hasMorePages())
           <a href="{{ $products->nextPageUrl() }}" class="px-3 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition">&gt;</a>
         @else

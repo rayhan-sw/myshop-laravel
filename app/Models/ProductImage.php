@@ -11,15 +11,12 @@ class ProductImage extends Model
 {
     use HasFactory;
 
-    /**
-     * Ganti nilai ini jika nama kolom path file di tabel berbeda
-     * (mis. 'filename' atau 'file').
-     */
+    // Nama kolom path file
     public const COL_PATH = 'image_path';
 
     protected $fillable = [
         'product_id',
-        self::COL_PATH,     // gunakan konstanta, bukan hardcode string
+        self::COL_PATH,
         'is_primary',
     ];
 
@@ -28,7 +25,7 @@ class ProductImage extends Model
         'is_primary' => 'boolean',
     ];
 
-    // Sertakan accessor 'url' saat toArray()/JSON
+    // Tambahkan atribut 'url' ke output JSON
     protected $appends = ['url'];
 
     protected static function booted(): void
@@ -38,15 +35,15 @@ class ProductImage extends Model
             $path = $img->{self::COL_PATH} ?? '';
             if (!$path) return;
 
-            // Normalisasi path sebelum delete
+            // Normalisasi path agar aman
             $path = trim(str_replace('\\', '/', $path));
-            $path = preg_replace('~^/?storage/~i', '', $path); // buang prefix "/storage/"
-            $path = preg_replace('~^public/~i',   '', $path);  // buang prefix "public/"
+            $path = preg_replace('~^/?storage/~i', '', $path);
+            $path = preg_replace('~^public/~i', '', $path);
 
             try {
                 Storage::disk('public')->delete($path);
             } catch (\Throwable $e) {
-                // biarkan jika gagal; jangan blokir penghapusan record
+                // Abaikan error agar tidak ganggu penghapusan record
             }
         });
     }
@@ -56,27 +53,20 @@ class ProductImage extends Model
         return $this->belongsTo(Product::class);
     }
 
-    /**
-     * URL publik RELATIF untuk frontend.
-     * Selalu kembalikan path /storage/... agar ikut host & port saat ini.
-     */
+    // Dapatkan URL publik relatif untuk frontend
     public function getUrlAttribute(): string
     {
         $path = $this->{self::COL_PATH} ?? '';
         if (!$path) return '';
 
-        // Normalisasi path agar tidak ganda
         $path = trim(str_replace('\\', '/', $path));
-        $path = preg_replace('~^/?storage/~i', '', $path); // hapus '/storage/' jika ada
-        $path = preg_replace('~^public/~i',   '', $path);  // hapus 'public/' jika ada
+        $path = preg_replace('~^/?storage/~i', '', $path);
+        $path = preg_replace('~^public/~i', '', $path);
 
-        // Kembalikan URL relatif → otomatis ikut host/port (127.0.0.1:8000)
         return '/storage/' . ltrim($path, '/');
     }
 
-    /**
-     * Urutkan primary dulu, lalu id (opsional).
-     */
+    // Scope urutkan agar gambar utama (primary) muncul dulu
     public function scopeOrdered($query)
     {
         return $query->orderByDesc('is_primary')->orderBy('id');

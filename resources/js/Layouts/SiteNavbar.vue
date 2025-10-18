@@ -2,7 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import SiteLayout from '@/Layouts/SiteLayout.vue';
 
-// fitur kecil untuk “Why choose…”
+// Data fitur untuk bagian "Why choose"
 const features = [
     {
         title: 'Fast Delivery',
@@ -21,7 +21,7 @@ const features = [
     },
 ];
 
-// produk dummy
+// Produk dummy (placeholder tampilan awal)
 const products = Array.from({ length: 8 }).map((_, i) => ({
     id: i + 1,
     name: `Product ${i + 1}`,
@@ -34,7 +34,7 @@ const products = Array.from({ length: 8 }).map((_, i) => ({
     <SiteLayout>
         <Head title="Home" />
 
-        <!-- Hero -->
+        <!-- Hero: headline + CTA -->
         <section class="border-b bg-black">
             <div
                 class="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 lg:grid-cols-2"
@@ -78,7 +78,7 @@ const products = Array.from({ length: 8 }).map((_, i) => ({
             </div>
         </section>
 
-        <!-- Latest Products -->
+        <!-- Latest Products: grid kartu produk (dummy) -->
         <section class="mx-auto max-w-7xl px-4 py-12">
             <h2 class="text-center text-xl font-semibold">LATEST PRODUCTS</h2>
             <div
@@ -87,9 +87,9 @@ const products = Array.from({ length: 8 }).map((_, i) => ({
                 <div
                     v-for="p in products"
                     :key="p.id"
-                    class="overflow-hidden rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 transition-colors"
+                    class="overflow-hidden rounded-xl border bg-white transition-colors dark:border-gray-800 dark:bg-gray-900"
                 >
-                    <div class="bg-gray-50 dark:bg-gray-800 transition-colors">
+                    <div class="bg-gray-50 transition-colors dark:bg-gray-800">
                         <img
                             :src="p.image"
                             :alt="p.name"
@@ -97,8 +97,14 @@ const products = Array.from({ length: 8 }).map((_, i) => ({
                         />
                     </div>
                     <div class="p-4">
-                        <h3 class="font-medium text-gray-900 dark:text-gray-100">{{ p.name }}</h3>
-                        <p class="mt-1 text-sm text-gray-700 dark:text-gray-400">
+                        <h3
+                            class="font-medium text-gray-900 dark:text-gray-100"
+                        >
+                            {{ p.name }}
+                        </h3>
+                        <p
+                            class="mt-1 text-sm text-gray-700 dark:text-gray-400"
+                        >
                             $ {{ p.price }}
                         </p>
                         <button class="btn-primary mt-3 w-full">
@@ -114,7 +120,7 @@ const products = Array.from({ length: 8 }).map((_, i) => ({
             </div>
         </section>
 
-        <!-- Why choose -->
+        <!-- Why choose: daftar keunggulan -->
         <section class="mx-auto max-w-7xl px-4 py-12">
             <h2 class="text-center text-2xl font-semibold">
                 WHY CHOOSE MY SHOP
@@ -139,7 +145,7 @@ const products = Array.from({ length: 8 }).map((_, i) => ({
             </div>
         </section>
 
-        <!-- Contact + Map -->
+        <!-- Contact + Map: form kontak sederhana + peta lokasi -->
         <section class="mx-auto max-w-7xl px-4 pb-16">
             <div class="grid gap-8 lg:grid-cols-2">
                 <div class="overflow-hidden rounded-lg border">

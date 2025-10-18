@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {{-- CSRF untuk form/axios --}}
+    {{-- CSRF token untuk form/axios --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- Preferensi tampilan --}}
@@ -15,28 +15,28 @@
     {{-- Judul dinamis dari Inertia --}}
     <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
-    {{-- (Opsional) Font Breeze --}}
+    {{-- Font (opsional) --}}
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-    {{-- Ziggy untuk route('...') di frontend --}}
+    {{-- Ziggy: akses route() di frontend --}}
     @routes
 
-    {{-- Vite: entry app + halaman Inertia aktif --}}
+    {{-- Vite: entry app + komponen halaman aktif --}}
     @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
 
-    {{-- Head dari Inertia (meta/title per-halaman) --}}
+    {{-- Head dari Inertia (meta/title per halaman) --}}
     @inertiaHead
   </head>
   <body class="min-h-full bg-gray-50 font-sans text-gray-900 antialiased">
-    {{-- Root Inertia --}}
+    {{-- Root Inertia mount point --}}
     @inertia
 
-    {{-- SweetAlert2 untuk flash & error pada initial load --}}
+    {{-- SweetAlert2 untuk flash & error saat initial load --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    {{-- Flash: success / status (Breeze sering pakai session("status")) --}}
+    {{-- Flash: success / status --}}
     @if (session('success') || session('status'))
       <script>
         document.addEventListener('DOMContentLoaded', () => {

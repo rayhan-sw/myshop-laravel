@@ -13,6 +13,7 @@ use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
+    // Daftar produk + pencarian sederhana
     public function index(Request $request)
     {
         $q = $request->string('q')->toString();
@@ -29,6 +30,7 @@ class ProductController extends Controller
         return view('admin.products.index', compact('products', 'q'));
     }
 
+    // Form pembuatan produk (pilih subkategori)
     public function create()
     {
         $categories = Category::whereNotNull('parent_id')
@@ -39,6 +41,7 @@ class ProductController extends Controller
         return view('admin.products.create', compact('categories'));
     }
 
+    // Simpan produk baru + upload gambar (set primary berdasar index)
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -52,7 +55,7 @@ class ProductController extends Controller
         ]);
 
         DB::transaction(function () use ($data, $request) {
-            // Simpan produk (hindari memasukkan key yang bukan kolom products)
+            // Buat produk (hanya kolom yang valid)
             $product = Product::create([
                 'name'        => $data['name'],
                 'category_id' => $data['category_id'],
@@ -61,20 +64,20 @@ class ProductController extends Controller
                 'description' => $data['description'] ?? null,
             ]);
 
-            // Upload gambar baru → simpan ke product_images.image_path
+            // Upload kumpulan gambar ke disk 'public'
             $uploaded = [];
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $i => $file) {
                     $path = $file->store('products', 'public');
                     $uploaded[] = ProductImage::create([
                         'product_id' => $product->id,
-                        'image_path' => $path,   // ← gunakan image_path
+                        'image_path' => $path,
                         'is_primary' => false,
                     ]);
                 }
             }
 
-            // Set primary berdasarkan primary_index
+            // Tetapkan gambar utama (primary) sesuai primary_index
             if (count($uploaded)) {
                 $primaryIndex = (int) ($data['primary_index'] ?? 0);
                 $primaryIndex = max(0, min($primaryIndex, count($uploaded) - 1));
@@ -86,6 +89,7 @@ class ProductController extends Controller
             ->with('success', 'Product created successfully.');
     }
 
+    // Form edit produk + urutan gambar (primary selalu di atas)
     public function edit(Product $product)
     {
         $categories = Category::whereNotNull('parent_id')
@@ -98,6 +102,7 @@ class ProductController extends Controller
         return view('admin.products.edit', compact('product','categories'));
     }
 
+    // Perbarui produk, kelola hapus/unggah gambar, dan set primary (lama/baru)
     public function update(Request $request, Product $product)
     {
         $data = $request->validate([
@@ -107,12 +112,12 @@ class ProductController extends Controller
             'stock'            => 'required|integer|min:0',
             'description'      => 'nullable|string',
 
-            // kelola gambar lama
+            // pengelolaan gambar lama
             'delete_images'    => 'array',
             'delete_images.*'  => 'integer|exists:product_images,id',
-            'primary_image_id' => 'nullable|string', // id lama atau "new_0"
+            'primary_image_id' => 'nullable|string', // bisa id lama atau "new_0"
 
-            // unggah gambar baru
+            // unggahan gambar baru
             'new_images.*'     => 'nullable|image|max:4096',
         ]);
 
@@ -126,35 +131,35 @@ class ProductController extends Controller
                 'description' => $data['description'] ?? null,
             ]);
 
-            // 1) Hapus gambar lama yang dicentang
+            // Hapus gambar lama yang dipilih (file + record)
             if (!empty($data['delete_images'])) {
                 $toDel = $product->images()->whereIn('id', $data['delete_images'])->get();
                 foreach ($toDel as $img) {
                     if ($img->image_path && Storage::disk('public')->exists($img->image_path)) {
-                        Storage::disk('public')->delete($img->image_path);  // ← pakai image_path
+                        Storage::disk('public')->delete($img->image_path);
                     }
                     $img->delete();
                 }
             }
 
-            // 2) Upload gambar baru → simpan ke image_path
-            $newMap = []; // key: "new_0" => ProductImage
+            // Upload gambar baru dan map key "new_i" -> ProductImage
+            $newMap = [];
             if ($request->hasFile('new_images')) {
                 foreach ($request->file('new_images') as $i => $file) {
                     $path = $file->store('products', 'public');
                     $key  = "new_{$i}";
                     $newMap[$key] = ProductImage::create([
                         'product_id' => $product->id,
-                        'image_path' => $path,   // ← pakai image_path
+                        'image_path' => $path,
                         'is_primary' => false,
                     ]);
                 }
             }
 
-            // 3) Reset semua primary
+            // Reset semua primary agar hanya satu yang aktif
             $product->images()->update(['is_primary' => false]);
 
-            // 4) Tentukan primary dari pilihan (id lama / new_x)
+            // Pilih primary dari id lama atau key "new_x"
             $primaryKey = $data['primary_image_id'] ?? null;
             $primaryImg = null;
 
@@ -166,7 +171,7 @@ class ProductController extends Controller
                 }
             }
 
-            // fallback jika tidak ada yang dipilih
+            // Fallback: gunakan gambar pertama jika belum ada pilihan
             if (!$primaryImg) {
                 $primaryImg = $product->images()->first();
             }
@@ -180,9 +185,9 @@ class ProductController extends Controller
             ->with('success', 'Product updated successfully.');
     }
 
+    // Hapus produk beserta gambar terkait (handled oleh relasi/hook)
     public function destroy(Product $product)
     {
-        // Eloquent delete akan memicu hook pada Product & ProductImage
         $product->load('images');
         $product->delete();
 

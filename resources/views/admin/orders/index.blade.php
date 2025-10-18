@@ -6,7 +6,7 @@
 <div class="mb-6">
   <h1 class="text-2xl font-semibold text-indigo-600 mb-2">Orders Management</h1>
 
-  {{-- Flash messages --}}
+  {{-- Notifikasi singkat --}}
   @if(session('success'))
     <div class="mb-3 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
       {{ session('success') }}
@@ -23,7 +23,7 @@
     </div>
   @endif
 
-  {{-- Status tabs --}}
+  {{-- Tab status pesanan --}}
   @php
     $statuses = ['all'=>'Semua','pending'=>'Pending','diproses'=>'Diproses','dikirim'=>'Dikirim','selesai'=>'Selesai','batal'=>'Batal'];
   @endphp
@@ -40,7 +40,7 @@
     </ul>
   </div>
 
-  {{-- Table --}}
+  {{-- Tabel daftar pesanan --}}
   <div class="overflow-x-auto rounded-lg border bg-white">
     <table class="min-w-full w-full text-left text-sm orders-table">
       <thead class="bg-gray-50 text-gray-600 border-b sticky top-0 z-10">
@@ -79,6 +79,7 @@
               <div class="flex flex-col sm:flex-row sm:items-center gap-2">
                 <span class="px-2 py-1 rounded {{ $badgeClass }}">{{ ucfirst($status) }}</span>
                 @if($status !== 'selesai')
+                  {{-- Form pembaruan status --}}
                   <form action="{{ route('admin.orders.update', $order) }}" method="POST" class="flex flex-col sm:flex-row sm:items-center gap-2">
                     @csrf @method('PATCH')
                     <select name="status" class="rounded border px-2 py-1 text-sm w-full sm:w-auto">
@@ -97,6 +98,7 @@
               <div class="text-gray-500 text-xs">{{ $order->created_at?->diffForHumans() }}</div>
             </td>
             <td class="px-3 py-2 max-w-xs">
+              {{-- Ringkasan item pesanan --}}
               @foreach($order->items as $it)
                 <div class="flex justify-between border-b py-1">
                   <div><strong>{{ $it->product?->name ?? '—' }}</strong> ×{{ $it->qty }}</div>
@@ -106,6 +108,7 @@
             </td>
             <td class="px-3 py-2 text-right">
               @if($order->status === 'selesai')
+                {{-- Hapus pesanan selesai --}}
                 <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="inline js-delete">
                   @csrf @method('DELETE')
                   <button class="rounded bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-sm">Hapus</button>
@@ -122,7 +125,7 @@
     </table>
   </div>
 
-  {{-- Pagination --}}
+  {{-- Paginasi --}}
   <div class="mt-4 flex justify-end">
     {{ $orders->links() }}
   </div>
@@ -136,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabs = document.querySelectorAll('#ordersTabs a');
   const tbody = document.getElementById('ordersBody');
 
-  // === [1] Fungsi filter tab (lokal + persist di localStorage) ===
+  // Filter tab (persist di localStorage)
   function setActiveTab(name) {
     tabs.forEach(t => {
       const isActive = t.dataset.tab === name;
@@ -157,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setActiveTab(t.dataset.tab);
   }));
 
-  // === [2] Konfirmasi hapus (SweetAlert2) ===
+  // Konfirmasi hapus (SweetAlert2)
   document.querySelectorAll('form.js-delete').forEach(f => {
     f.addEventListener('submit', e => {
       e.preventDefault();
@@ -176,18 +179,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // === [3] Auto-flash scroll ke atas jika ada notifikasi ===
+  // Scroll ke atas bila ada flash message
   const flash = document.querySelector('.border-emerald-200, .border-yellow-200, .border-rose-200');
   if (flash) window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // === [4] Form update status reload otomatis (optional UX improve) ===
+  // Reload ringan setelah update status (opsional UX)
   document.querySelectorAll('form[action*="admin/orders/update"]').forEach(form => {
     form.addEventListener('submit', () => {
       setTimeout(() => window.location.reload(), 500);
     });
   });
 });
-
-
 </script>
 @endpush

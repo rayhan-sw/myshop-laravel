@@ -3,10 +3,11 @@ import { Head, Link } from '@inertiajs/vue3';
 import SiteLayout from '@/Layouts/SiteLayout.vue';
 
 const props = defineProps({
-    orders: { type: Array, default: () => [] },
+    orders: { type: Array, default: () => [] }, // daftar pesanan milik user
 });
 
 function money(n) {
+    // format angka → Rupiah
     return new Intl.NumberFormat('id-ID', {
         style: 'currency',
         currency: 'IDR',
@@ -14,6 +15,7 @@ function money(n) {
 }
 
 function badgeClass(status) {
+    // map status → kelas badge
     switch (status) {
         case 'pending':
             return 'bg-yellow-50 text-yellow-700';
@@ -34,9 +36,13 @@ function badgeClass(status) {
 <template>
     <SiteLayout>
         <Head title="Pesanan Saya" />
-        <section class="mx-auto max-w-5xl px-4 py-8 pt-[92px]">
-            <h1 class="mb-4 text-2xl font-semibold text-brown dark:text-sage">Pesanan Saya</h1>
 
+        <section class="mx-auto max-w-5xl px-4 py-8 pt-[92px]">
+            <h1 class="mb-4 text-2xl font-semibold text-brown dark:text-sage">
+                Pesanan Saya
+            </h1>
+
+            <!-- kosong: ajak user ke halaman shop -->
             <div
                 v-if="!orders.length"
                 class="rounded-xl border bg-white p-6 text-center text-gray-500"
@@ -45,23 +51,23 @@ function badgeClass(status) {
                 <Link
                     :href="route('shop')"
                     class="text-indigo-600 hover:underline"
-                >
-                    Belanja dulu </Link
+                    >Belanja dulu</Link
                 >.
             </div>
 
+            <!-- list pesanan -->
             <div v-else class="space-y-4 text-brown dark:text-cream">
-                <!-- ✅ pakai nomor lokal per user -->
                 <div
                     v-for="(o, i) in orders"
                     :key="o.id"
-                    class="rounded-xl border dark:border-sage bg-cream/30 dark:bg-darkbrown/40 p-5"
+                    class="rounded-xl border bg-cream/30 p-5 dark:border-sage dark:bg-darkbrown/40"
                 >
                     <div
                         class="flex flex-wrap items-center justify-between gap-3"
                     >
                         <div>
                             <p class="font-semibold">Order #{{ i + 1 }}</p>
+                            <!-- nomor lokal -->
                             <p class="text-sm text-gray-500 dark:text-offwhite">
                                 Tanggal:
                                 {{
@@ -71,6 +77,7 @@ function badgeClass(status) {
                                 }}
                             </p>
                         </div>
+
                         <div class="flex items-center gap-4">
                             <span
                                 class="rounded-full px-3 py-1 text-sm font-medium"
@@ -84,6 +91,7 @@ function badgeClass(status) {
                         </div>
                     </div>
 
+                    <!-- rincian item -->
                     <div class="mt-4 divide-y">
                         <div
                             v-for="it in o.items"
@@ -94,7 +102,9 @@ function badgeClass(status) {
                                 <p class="font-medium">
                                     {{ it.product?.name }}
                                 </p>
-                                <p class="text-sm text-gray-600 dark:text-offwhite">
+                                <p
+                                    class="text-sm text-gray-600 dark:text-offwhite"
+                                >
                                     x{{ it.qty }} · {{ money(it.price) }}
                                 </p>
                             </div>
@@ -102,6 +112,7 @@ function badgeClass(status) {
                         </div>
                     </div>
 
+                    <!-- alamat pengiriman -->
                     <div class="mt-3 text-sm text-gray-600 dark:text-offwhite">
                         <p>
                             <span class="font-medium">Alamat:</span>

@@ -6,10 +6,10 @@ use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
 {
-    // … $middleware, $middlewareGroups, dll (biarkan)
+    // Middleware global
 
     protected $middlewareAliases = [
-        // bawaan Laravel…
+        // Middleware default
         'auth'             => \App\Http\Middleware\Authenticate::class,
         'auth.basic'       => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'guest'            => \App\Http\Middleware\RedirectIfAuthenticated::class,
@@ -18,7 +18,7 @@ class Kernel extends HttpKernel
         'throttle'         => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified'         => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
-        // >>> alias yang kamu pakai di web.php
+        // Middleware kustom (di web.php)
         'block.admin.frontend' => \App\Http\Middleware\BlockAdminFromFrontend::class,
         'admin'                => \App\Http\Middleware\Admin::class,
     ];

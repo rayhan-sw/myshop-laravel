@@ -35,7 +35,7 @@ class Product extends Model
 
     protected static function booted(): void
     {
-        // Slug unik otomatis
+        // Slug otomatis
         static::creating(function (Product $p) {
             $p->slug = static::makeUniqueSlug($p->slug ?: $p->name ?: 'product');
         });
@@ -81,9 +81,7 @@ class Product extends Model
         return $slug;
     }
 
-    // =========================
     // Relations
-    // =========================
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
@@ -97,9 +95,7 @@ class Product extends Model
             ->orderBy('id');
     }
 
-    // =========================
     // Scopes
-    // =========================
     public function scopeActive($q)
     {
         return $q->where('is_active', true);
@@ -119,9 +115,7 @@ class Product extends Model
         });
     }
 
-    // =========================
     // Helpers / Accessors
-    // =========================
     public function getPriceFormattedAttribute(): string
     {
         return 'Rp ' . number_format((float) $this->price, 0, ',', '.');
