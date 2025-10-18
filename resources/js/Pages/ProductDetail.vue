@@ -246,16 +246,16 @@ onBeforeUnmount(() => {
 
                     <!-- Info -->
                     <div>
-                        <h1 class="text-2xl font-semibold">
+                        <h1 class="text-2xl font-semibold dark:text-cream">
                             {{ product.name }}
                         </h1>
                         <p class="mt-1 text-gray-500">
                             {{ categoryPath(product) }}
                         </p>
-                        <p class="mt-3 text-xl font-bold text-indigo-700">
+                        <p class="mt-3 text-xl font-bold text-brown dark:text-cream">
                             {{ money(product.price) }}
                         </p>
-                        <p class="mt-2 leading-relaxed text-gray-700">
+                        <p class="mt-2 leading-relaxed text-brown dark:text-offwhite">
                             {{ product.description }}
                         </p>
 
@@ -287,7 +287,7 @@ onBeforeUnmount(() => {
                                     -
                                 </button>
                                 <input
-                                    class="w-14 border-x px-2 py-2 text-center"
+                                    class="w-14 border-x px-2 py-2 text-center bg-white dark:bg-brown focus:outline-none"
                                     type="number"
                                     v-model.number="qty"
                                     @input="clampQty"
@@ -324,7 +324,7 @@ onBeforeUnmount(() => {
 
                 <!-- Related Products -->
                 <section v-if="related && related.length" class="mt-12">
-                    <h2 class="text-lg font-semibold">Related Products</h2>
+                    <h2 class="text-lg font-semibold text-brown dark:text-cream">Related Products</h2>
 
                     <div
                         class="xs:grid-cols-2 mt-4 grid gap-6 sm:grid-cols-3 lg:grid-cols-4"
@@ -332,14 +332,14 @@ onBeforeUnmount(() => {
                         <div
                             v-for="rp in related"
                             :key="rp.id"
-                            class="relative cursor-pointer overflow-hidden rounded-xl border bg-white transition hover:shadow-md"
+                            class="group relative overflow-hidden rounded-xl border border-sage/40 bg-cream/30 dark:bg-darkbrown/40 shadow-sm hover:shadow-md transition"
                             @click="goDetail(rp)"
                         >
                             <div class="bg-gray-50 p-6">
                                 <img
                                     :src="imgUrl(rp.images?.[0], rp.id)"
                                     :alt="rp.name"
-                                    class="aspect-square w-full object-contain"
+                                    class="aspect-square w-full object-contain bg-offwhite/70 dark:bg-gray-800"
                                 />
                             </div>
 

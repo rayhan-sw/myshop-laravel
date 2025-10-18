@@ -15,7 +15,7 @@ defineProps({
     <SiteLayout>
         <Head title="Profile" />
 
-        <section class="mx-auto max-w-7xl px-4 py-10">
+        <section class="mx-auto max-w-7xl px-4 py-10 pt-[100px]">
             <h1 class="text-2xl font-semibold">My Profile</h1>
             <p class="mt-1 text-sm text-gray-500">
                 Kelola informasi akun Anda.

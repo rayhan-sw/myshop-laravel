@@ -162,7 +162,7 @@ async function addToCart(productId, qty = 1) {
                 <div
                     v-for="p in products"
                     :key="p.id"
-                    class="relative overflow-hidden rounded-xl border bg-white transition hover:shadow-md"
+                    class="relative overflow-hidden rounded-xl border border-sage/40 bg-cream/30 dark:bg-darkbrown/40 shadow-sm hover:shadow-md transition"
                 >
                     <!-- stretched link -->
                     <Link
@@ -176,7 +176,7 @@ async function addToCart(productId, qty = 1) {
                         <img
                             :src="imgOf(p)"
                             :alt="p.name"
-                            class="aspect-square w-full object-contain"
+                            class="aspect-square w-full object-contain bg-offwhite/70 dark:bg-gray-800"
                         />
                     </div>
 
