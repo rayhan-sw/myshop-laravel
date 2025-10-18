@@ -214,7 +214,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
 
                     <!-- Cart -->
                     <Link
-                        :href="cartHref"
+                        :href="route('cart.index')"
                         class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                         :title="user ? 'Your Cart' : 'Login to view cart'"
                         aria-label="Cart"

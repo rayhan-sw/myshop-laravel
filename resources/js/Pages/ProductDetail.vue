@@ -305,14 +305,14 @@ onBeforeUnmount(() => {
                             </div>
 
                             <button
-                                class="rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 disabled:opacity-50"
+                                class="rounded bg-sage border px-4 py-2 text-white hover:bg-sage/70 disabled:opacity-50"
                                 @click="addToCart"
                                 :disabled="!inStock"
                             >
                                 Add to Cart
                             </button>
                             <button
-                                class="rounded bg-rose-600 px-4 py-2 text-white hover:bg-rose-700 disabled:opacity-50"
+                                class="rounded bg-brown px-4 py-2 text-white hover:bg-brown/70 disabled:opacity-50"
                                 @click="buyNow"
                                 :disabled="!inStock"
                             >
