@@ -63,7 +63,7 @@ function toggle(i) {
                     <img
                         :src="f.icon"
                         :alt="f.title"
-                        class="mx-auto h-16 w-16 object-contain"
+                        class="mx-auto h-16 w-16 object-contain dark:invert dark:brightness-200"
                     />
                     <h3 class="mt-4 font-semibold">{{ f.title }}</h3>
                     <p class="mt-1 text-sm text-gray-500">{{ f.desc }}</p>

@@ -97,11 +97,11 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
                 <!-- Brand -->
                 <Link :href="route('landing')" class="flex items-center gap-2">
                     <img
-                        src="/theme/images/logo.png"
+                        src="/theme/icons/Vector 1.svg"
                         alt="Logo"
                         class="h-6 w-auto"
                     />
-                    <span class="font-semibold">My Shop</span>
+                    <span class="font-semibold text-brown dark:text-sage">Second Soul</span>
                 </Link>
 
                 <!-- Menu Tengah (hanya desktop) -->
@@ -411,13 +411,13 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
 
             <!-- Mobile dropdown menu -->
             <transition name="fade">
-                <div v-if="showMobileMenu" class=" rounded-lg md:hidden absolute top-14 left-0 w-full border-t bg-white shadow-md z-30">
-                    <ul class="flex flex-col gap-2 px-4 py-3 text-sm">
-                    <li><Link :href="route('landing')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-sage': is('landing') }">Home</Link></li>
-                    <li><Link :href="route('shop')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-sage': is('shop') }">Shop</Link></li>
-                    <li><Link :href="route('why')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-sage': is('why') }">Why Us</Link></li>                        
-                    <li><Link :href="route('testimonial')" class="block py-2 hover:text-sage" :class="{ 'text-indigo-600': is('testimonial') }">Testimonials</Link></li>
-                    <li><Link :href="route('contact')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-sage': is('contact') }">Contact</Link></li>
+                <div v-if="showMobileMenu" class=" rounded-lg md:hidden absolute top-14 left-0 w-full border-t bg-white/90 dark:bg-gray-900/90 dark:border-gray-800 shadow-md z-30">
+                    <ul class="flex flex-col gap-2 px-4 py-3 text-sm text-gray-800 dark:text-cream">
+                    <li><Link :href="route('landing')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-offwhite': is('landing') }">Home</Link></li>
+                    <li><Link :href="route('shop')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-offwhite': is('shop') }">Shop</Link></li>
+                    <li><Link :href="route('why')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-offwhite': is('why') }">Why Us</Link></li>                        
+                    <li><Link :href="route('testimonial')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-offwhite': is('testimonial') }">Testimonials</Link></li>
+                    <li><Link :href="route('contact')" class="block py-2 hover:text-sage" :class="{ 'text-brown dark:text-offwhite': is('contact') }">Contact</Link></li>
                     <li v-if="isAdmin"><Link :href="route('admin.dashboard')" class="block py-2 text-amber-600 hover:text-amber-700">Admin</Link></li>
                     </ul>
                 </div>
@@ -458,7 +458,7 @@ onBeforeUnmount(() => document.removeEventListener('click', clickOutside));
         <!-- FOOTER -->
         <footer class="border-t bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-200">
             <div class="mx-auto max-w-7xl px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-                © 2025 My Shop. All Rights Reserved.
+                © 2025 Second Soul. All Rights Reserved.
             </div>
         </footer>
     </div>

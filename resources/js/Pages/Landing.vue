@@ -31,11 +31,11 @@ const slides = [
 const currentSlide = ref(0);
 let timer = null;
 
-// Auto slide setiap 5 detik
+// Auto slide setiap 15 detik
 onMounted(() => {
   timer = setInterval(() => {
     currentSlide.value = (currentSlide.value + 1) % slides.length;
-  }, 5000);
+  }, 15000);
 });
 
 onBeforeUnmount(() => {
@@ -46,6 +46,7 @@ onBeforeUnmount(() => {
 const nextSlide = () => {
   currentSlide.value = (currentSlide.value + 1) % slides.length;
 };
+
 const prevSlide = () => {
   currentSlide.value = (currentSlide.value - 1 + slides.length) % slides.length;
 };
@@ -137,64 +138,64 @@ async function addToCart(productId, qty = 1) {
 <template>
 <SiteLayout>
         <Head title="Home" />
-
-        <!-- HERO SLIDER SECTION -->
+    <!-- HERO SLIDER SECTION -->
         <section class="relative overflow-hidden bg-sage dark:bg-brown">
 
-        <!-- Slide 1: IMAGE HERO -->
-        <div
-        v-if="currentSlide === 0"
-        class="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 pt-[100px] min-h-[calc(100vh-72px)] lg:grid-cols-2"
-        >
-        <!-- Text -->
-        <div class="space-y-6 text-white text-center lg:text-left">
-            <h1 class="text-brown dark:text-sage font-extrabold text-4xl md:text-5xl leading-tight">
-            Welcome To Our <br />
-            <span class="text-offwhite">Gift Shop</span>
-            </h1>
-            <p class="max-w-prose text-sm md:text-base text-brown dark:text-offwhite font-body mx-auto lg:mx-0">
-            “Second Soul” berangkat dari gagasan bahwa setiap barang memiliki cerita dan kenangan dari pemilik sebelumnya. Saat berpindah tangan, barang itu tidak kehilangan nilainya - justru mendapatkan jiwa baru melalui makna yang diberikan oleh pemilik berikutnya."
-            </p>
-            <div class="flex flex-wrap justify-center lg:justify-start gap-3">
-            <Link :href="route('contact')" class="inline-flex items-center justify-center font-body rounded-md border border-sage bg-brown dark:bg-sage text-sage dark:text-brown px-4 py-2 hover:bg-offwhite hover:border-brown transition"> Contact Us </Link> 
-            <Link :href="route('shop')" class="inline-flex items-center justify-center font-body rounded-md border border-brown dark:border-sage px-4 py-2 text-brown dark:text-sage hover:bg-white/10"> Shop Now </Link>
-            </div>
-        </div>
-
-        <!-- Image -->
-        <div class="relative">
-            <img src="/theme/images/image3.jpeg" alt="Hero" class="w-full rounded-lg object-cover shadow max-h-[400px] mx-auto" />
-        </div>
-        </div>
-
-        <!-- Slide 2: VIDEO HERO -->
-        <div v-else class="relative w-full min-h-[calc(100vh-70px)] pt-[80px] ">
-        <video
-            autoplay
-            muted
-            loop
-            playsinline
-            class="absolute inset-0 w-full h-full object-cover z-0"
-        >
-            <source src="/theme/videos/dashvid.mp4" type="video/mp4" />
-            Browser Anda tidak mendukung video.
-        </video>
-
-        <!-- Overlay content -->
-        <div class="absolute inset-0 bg-black/40 flex items-center justify-center z-10 px-4 text-center">
-            <div class="text-white max-w-2xl">
-            <h1 class="text-3xl md:text-5xl font-extrabold text-white">{{ slides[1].title }}</h1>
-            <p class="mt-4 text-sm md:text-base text-gray-200">
-                Setiap produk punya cerita...
-            </p>
-            <div class="mt-6 flex justify-center gap-3 flex-wrap">
-                <Link :href="route('contact')" class="inline-flex items-center justify-center font-body rounded-md border border-sage bg-brown text-sage px-4 py-2 hover:bg-offwhite hover:border-brown transition"> Contact Us </Link> 
-            <Link :href="route('shop')" class="inline-flex items-center justify-center font-body rounded-md border border-brown px-4 py-2 text-brown hover:bg-white/10"> Shop Now </Link>
+        <!-- Slider Container -->
+        <div class="slider-container flex transition-transform duration-700 ease-in-out" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
+            <!-- Slide 1: IMAGE HERO -->
+            <div class="slide flex-shrink-0 w-full">
+            <div class="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 pt-[100px] min-h-[calc(100vh-72px)] lg:grid-cols-2">
+                <!-- Text -->
+                <div class="space-y-6 text-white text-center lg:text-left">
+                <h1 class="text-brown dark:text-sage font-extrabold text-4xl md:text-5xl leading-tight">
+                    Welcome To Our <br />
+                    <span class="text-offwhite">Gift Shop</span>
+                </h1>
+                <p class="max-w-prose text-sm md:text-base text-brown dark:text-offwhite font-body mx-auto lg:mx-0">
+                    “Second Soul” berangkat dari gagasan bahwa setiap barang memiliki cerita dan kenangan dari pemilik sebelumnya...
+                </p>
+                <div class="flex flex-wrap justify-center lg:justify-start gap-3">
+                    <Link :href="route('contact')" class="inline-flex items-center justify-center font-body rounded-md border border-sage bg-brown dark:bg-sage text-sage dark:text-brown px-4 py-2 hover:bg-offwhite hover:border-brown transition"> Contact Us </Link>
+                    <Link :href="route('shop')" class="inline-flex items-center justify-center font-body rounded-md border border-brown dark:border-sage px-4 py-2 text-brown dark:text-sage hover:bg-white/10"> Shop Now </Link>
+                </div>
+                </div>
+                <!-- Image -->
+                <div class="relative">
+                <img src="/theme/images/image3.jpeg" alt="Hero" class="w-full rounded-lg object-cover shadow max-h-[400px] mx-auto" />
+                </div>
             </div>
             </div>
-        </div>
-        </div>
 
+            <!-- Slide 2: VIDEO HERO -->
+            <div class="slide flex-shrink-0 w-full relative">
+            <video
+                ref="heroVideo"
+                autoplay
+                muted
+                loop
+                playsinline
+                class="absolute inset-0 w-full h-full object-cover z-0"
+            >
+                <source src="/theme/videos/dashvideo.mp4" type="video/mp4" />
+                Browser Anda tidak mendukung video.
+            </video>
+
+            <!-- Overlay content -->
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center z-10 px-4 text-center">
+                <div class="text-white max-w-2xl">
+                <h1 class="text-3xl md:text-5xl font-extrabold text-white">{{ slides[1].title }}</h1>
+                <p class="mt-4 text-sm md:text-base text-gray-200">
+                    Setiap produk punya cerita...
+                </p>
+                <div class="mt-6 flex justify-center gap-3 flex-wrap">
+                    <Link :href="route('contact')" class="inline-flex items-center justify-center font-body rounded-md border border-sage bg-brown text-sage px-4 py-2 hover:bg-offwhite hover:border-brown transition"> Contact Us </Link>
+                    <Link :href="route('shop')" class="inline-flex items-center justify-center font-body rounded-md border border-brown px-4 py-2 text-brown hover:bg-white/10"> Shop Now </Link>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
 
         <!-- Manual Controls -->
         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-20">
@@ -205,8 +206,8 @@ async function addToCart(productId, qty = 1) {
         </section>
 
         <!-- Produk terbaru -->
-        <section v-if="products.length" class="mx-auto max-w-7xl px-4 py-12">
-            <h2 class="text-center text-xl font-semibold">Produk</h2>
+        <section v-if="products.length" class="mx-auto max-w-7xl px-4 py-6">
+            <h1 class="text-center text-xl font-semibold dark:text-offwhite">Produk</h1>
 
             <div
                 class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-8"
@@ -288,7 +289,7 @@ async function addToCart(productId, qty = 1) {
                     <img
                         :src="f.icon"
                         :alt="f.title"
-                        class="mx-auto h-16 w-16 object-contain"
+                        class="mx-auto h-16 w-16 object-contain dark:invert dark:brightness-200"
                     />
                     <h3 class="mt-4 font-semibold">{{ f.title }}</h3>
                     <p class="mt-1 text-sm text-gray-500">{{ f.desc }}</p>
