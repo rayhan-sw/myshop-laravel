@@ -1,6 +1,7 @@
 <script setup>
 import { Head, Link, usePage, router } from '@inertiajs/vue3';
 import SiteLayout from '@/Layouts/SiteLayout.vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
 // Fitur “Why choose…”
 const features = [
@@ -20,6 +21,35 @@ const features = [
         icon: '/theme/images/free.svg',
     },
 ];
+
+// Slider
+const slides = [
+  { type: 'image', src: '/theme/images/hero1.jpg', title: 'Welcome To Our Gift Shop' },
+  { type: 'video', src: '/theme/videos/hero-video.mp4', title: 'Second Soul' },
+];
+
+const currentSlide = ref(0);
+let timer = null;
+
+// Auto slide setiap 5 detik
+onMounted(() => {
+  timer = setInterval(() => {
+    currentSlide.value = (currentSlide.value + 1) % slides.length;
+  }, 5000);
+});
+
+onBeforeUnmount(() => {
+  clearInterval(timer);
+});
+
+// Navigasi manual
+const nextSlide = () => {
+  currentSlide.value = (currentSlide.value + 1) % slides.length;
+};
+const prevSlide = () => {
+  currentSlide.value = (currentSlide.value - 1 + slides.length) % slides.length;
+};
+
 
 // Data dari server
 const page = usePage();
@@ -108,48 +138,70 @@ async function addToCart(productId, qty = 1) {
 <SiteLayout>
         <Head title="Home" />
 
-        <!-- Hero -->
-        <section class=" bg-sage dark:bg-brown pt-10">
-            <div
-                class="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 lg:grid-cols-2"
-            >
-                <div class="space-y-6 text-white">
-                    <h1 class="text-brown dark:text-sage font-extrabold text-5xl/tight">
-                        Welcome To Our <br />
-                        <span class="text-offwhite">Gift Shop</span>
-                    </h1>
-                    <p class="max-w-prose text-sm text-brown dark:text-offwhite font-body">
-                       “Second Soul” berangkat dari gagasan bahwa setiap barang memiliki cerita dan kenangan dari pemilik sebelumnya. Saat berpindah tangan, barang itu tidak kehilangan nilainya - justru mendapatkan jiwa baru melalui makna yang diberikan oleh pemilik berikutnya.
+        <!-- HERO SLIDER SECTION -->
+        <section class="relative overflow-hidden bg-sage dark:bg-brown">
 
-Toko ini bukan sekadar tempat jual beli barang bekas, tetapi ruang yang menghargai sejarah kecil di balik benda-benda sederhana. Setiap item punya perjalanan unik - dan pembeli adalah bagian dari kelanjutan kisah itu.
-
-                    </p>
-                    <div class="flex gap-3">
-                        <Link :href="route('contact')" class="inline-flex items-center justify-center font-body rounded-md border border-sage bg-brown text-sage px-4 py-2 hover:bg-offwhite hover:border-brown transition"
-                            >Contact Us</Link
-                        >
-                        <Link
-                            :href="route('shop')"
-                            class="inline-flex items-center justify-center font-body rounded-md border border-brown px-4 py-2 text-brown hover:bg-white/10"
-                        >
-                            Shop Now
-                        </Link>
-                    </div>
-                </div>
-
-                <div class="relative">
-                    <img
-                        src="/theme/images/image3.jpeg"
-                        alt="Hero"
-                        class="h-auto w-full rounded-lg object-cover shadow"
-                    />
-                    <img
-                        src="/theme/images/slider-bg.jpg"
-                        alt=""
-                        class="pointer-events-none absolute -left-8 -top-8 -z-10 w-40 opacity-20"
-                    />
-                </div>
+        <!-- Slide 1: IMAGE HERO -->
+        <div
+        v-if="currentSlide === 0"
+        class="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 pt-[100px] min-h-[calc(100vh-72px)] lg:grid-cols-2"
+        >
+        <!-- Text -->
+        <div class="space-y-6 text-white text-center lg:text-left">
+            <h1 class="text-brown dark:text-sage font-extrabold text-4xl md:text-5xl leading-tight">
+            Welcome To Our <br />
+            <span class="text-offwhite">Gift Shop</span>
+            </h1>
+            <p class="max-w-prose text-sm md:text-base text-brown dark:text-offwhite font-body mx-auto lg:mx-0">
+            “Second Soul” berangkat dari gagasan bahwa setiap barang memiliki cerita dan kenangan dari pemilik sebelumnya. Saat berpindah tangan, barang itu tidak kehilangan nilainya - justru mendapatkan jiwa baru melalui makna yang diberikan oleh pemilik berikutnya."
+            </p>
+            <div class="flex flex-wrap justify-center lg:justify-start gap-3">
+            <Link :href="route('contact')" class="inline-flex items-center justify-center font-body rounded-md border border-sage bg-brown dark:bg-sage text-sage dark:text-brown px-4 py-2 hover:bg-offwhite hover:border-brown transition"> Contact Us </Link> 
+            <Link :href="route('shop')" class="inline-flex items-center justify-center font-body rounded-md border border-brown dark:border-sage px-4 py-2 text-brown dark:text-sage hover:bg-white/10"> Shop Now </Link>
             </div>
+        </div>
+
+        <!-- Image -->
+        <div class="relative">
+            <img src="/theme/images/image3.jpeg" alt="Hero" class="w-full rounded-lg object-cover shadow max-h-[400px] mx-auto" />
+        </div>
+        </div>
+
+        <!-- Slide 2: VIDEO HERO -->
+        <div v-else class="relative w-full min-h-[calc(100vh-70px)] pt-[80px] ">
+        <video
+            autoplay
+            muted
+            loop
+            playsinline
+            class="absolute inset-0 w-full h-full object-cover z-0"
+        >
+            <source src="/theme/videos/dashvid.mp4" type="video/mp4" />
+            Browser Anda tidak mendukung video.
+        </video>
+
+        <!-- Overlay content -->
+        <div class="absolute inset-0 bg-black/40 flex items-center justify-center z-10 px-4 text-center">
+            <div class="text-white max-w-2xl">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-white">{{ slides[1].title }}</h1>
+            <p class="mt-4 text-sm md:text-base text-gray-200">
+                Setiap produk punya cerita...
+            </p>
+            <div class="mt-6 flex justify-center gap-3 flex-wrap">
+                <Link :href="route('contact')" class="inline-flex items-center justify-center font-body rounded-md border border-sage bg-brown text-sage px-4 py-2 hover:bg-offwhite hover:border-brown transition"> Contact Us </Link> 
+            <Link :href="route('shop')" class="inline-flex items-center justify-center font-body rounded-md border border-brown px-4 py-2 text-brown hover:bg-white/10"> Shop Now </Link>
+            </div>
+            </div>
+        </div>
+        </div>
+
+
+        <!-- Manual Controls -->
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+            <button @click="prevSlide" class="w-10 h-10 rounded-full bg-white/70 hover:bg-white text-gray-800 font-bold">&lt;</button>
+            <button @click="nextSlide" class="w-10 h-10 rounded-full bg-white/70 hover:bg-white text-gray-800 font-bold">&gt;</button>
+        </div>
+
         </section>
 
         <!-- Produk terbaru -->
