@@ -32,5 +32,9 @@ class DatabaseSeeder extends Seeder
                 'password_hash' => Hash::make('password123'), // Password default customer
             ]
         );
+        // Panggil seeder tambahan
+        $this->call([
+            MediaSeeder::class,
+        ]);
     }
 }
