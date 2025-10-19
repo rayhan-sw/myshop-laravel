@@ -38,7 +38,7 @@ class RegisteredUserController extends Controller
             'address'  => ['required', 'string', 'max:255'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ], [
-            'phone.regex'  => 'Nomor telepon harus diawali +62 dan berisi 9–13 digit angka.',
+            'phone.regex'  => 'Nomor telepon harus diawali +62 dan berisi 9-13 digit angka.',
             'phone.unique' => 'Nomor telepon sudah terdaftar.',
             'email.unique' => 'Email sudah terdaftar.',
         ]);

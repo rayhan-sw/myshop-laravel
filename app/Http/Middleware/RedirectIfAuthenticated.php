@@ -16,12 +16,12 @@ class RedirectIfAuthenticated
             if (auth()->guard($guard)->check()) {
                 $user = auth()->guard($guard)->user();
 
-                // Admin yang sudah login → admin dashboard
+                // Admin yang sudah login ke admin dashboard
                 if ($user && $user->role === 'admin') {
                     return redirect()->route('admin.dashboard');
                 }
 
-                // User biasa → ke /dashboard (Inertia → profile.edit)
+                // User biasa ke /dashboard (Inertia → profile.edit)
                 return redirect()->route('landing');
             }
         }

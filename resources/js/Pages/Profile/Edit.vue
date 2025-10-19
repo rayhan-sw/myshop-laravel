@@ -15,15 +15,15 @@ defineProps({
     <SiteLayout>
         <Head title="Profile" />
 
-        <section class="mx-auto max-w-7xl px-4 py-10">
-            <h1 class="text-2xl font-semibold">My Profile</h1>
-            <p class="mt-1 text-sm text-gray-500">
+        <section class="mx-auto max-w-7xl px-4 py-10 pt-[100px]">
+            <h1 class="text-2xl font-semibold text-brown dark:text-cream">My Profile</h1>
+            <p class="mt-1 text-sm text-gray-500 dark:text-offwhite">
                 Kelola informasi akun Anda.
             </p>
 
             <div class="mt-8 space-y-6">
                 <!-- Update Profile -->
-                <div class="rounded-lg border bg-white p-6 shadow-sm">
+                <div class="rounded-lg border bg-white dark:bg-darkbrown/40 p-6 shadow-sm">
                     <UpdateProfileInformationForm
                         :must-verify-email="mustVerifyEmail"
                         :status="status"
@@ -32,12 +32,12 @@ defineProps({
                 </div>
 
                 <!-- Update Password -->
-                <div class="rounded-lg border bg-white p-6 shadow-sm">
+                <div class="rounded-lg border bg-white dark:bg-darkbrown/40 p-6 shadow-sm">
                     <UpdatePasswordForm class="max-w-xl" />
                 </div>
 
                 <!-- Delete User -->
-                <div class="rounded-lg border bg-white p-6 shadow-sm">
+                <div class="rounded-lg border bg-white dark:bg-darkbrown/40 p-6 shadow-sm">
                     <DeleteUserForm class="max-w-xl" />
                 </div>
             </div>

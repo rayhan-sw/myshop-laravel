@@ -1,6 +1,6 @@
 {{-- resources/views/admin/layouts/app.blade.php --}}
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
+<html lang="id" class="h-full">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,59 +12,118 @@
       @endif
     </title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    {{-- Asset utama proyek --}}
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
+
+    {{-- SweetAlert2 (via CDN) --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
   </head>
+
   <body class="h-full bg-gray-50 font-sans text-gray-900 antialiased">
+    <div class="min-h-screen">
+      {{-- Header utama admin --}}
+      <header class="border-b bg-white" role="banner">
+        @include('admin.layouts.partials.header')
+      </header>
 
-    <header class="border-b bg-white" role="banner">
-      @include('admin.layouts.partials.header')
-    </header>
-
-    <div class="mx-auto flex w-full max-w-7xl gap-6 px-4 py-6">
-      <nav class="w-64 shrink-0" aria-label="Admin sidebar">
+      <div class="mx-auto flex w-full max-w-7xl gap-6 px-4 py-6">
+        {{-- Sidebar navigasi --}}
         @include('admin.layouts.partials.sidebar')
-      </nav>
 
-      <main class="min-h-[70vh] flex-1" role="main">
-        @hasSection('breadcrumbs')
-          <div class="mb-4 text-sm text-gray-500">
-            @yield('breadcrumbs')
-          </div>
-        @endif
+        {{-- Area konten utama --}}
+        <main class="min-h-[70vh] flex-1" role="main">
+          @hasSection('breadcrumbs')
+            <div class="mb-4 text-sm text-gray-500">
+              @yield('breadcrumbs')
+            </div>
+          @endif
 
-        @if(session('success'))
-          <div class="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-700">
-            {{ session('success') }}
-          </div>
-        @endif
-        @if(session('error'))
-          <div class="mb-4 rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700">
-            {{ session('error') }}
-          </div>
-        @endif
-        @if ($errors->any())
-          <div class="mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800">
-            <div class="font-medium">There were some problems with your input:</div>
-            <ul class="mt-2 list-disc ps-5">
-              @foreach ($errors->all() as $e)
-                <li>{{ $e }}</li>
-              @endforeach
-            </ul>
-          </div>
-        @endif
+          {{-- Blok error input (jika ada validasi gagal) --}}
+          @if ($errors->any())
+            <div class="mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800">
+              <div class="font-medium">Ada masalah pada input:</div>
+              <ul class="mt-2 list-disc ps-5">
+                @foreach ($errors->all() as $e)
+                  <li>{{ $e }}</li>
+                @endforeach
+              </ul>
+            </div>
+          @endif
 
-        @yield('content')
-      </main>
+          {{-- Konten halaman dinamis --}}
+          @yield('content')
+        </main>
+      </div>
+
+      {{-- Footer global --}}
+      <footer class="border-t bg-white" role="contentinfo">
+        <div class="mx-auto max-w-7xl px-4 py-6 text-center text-sm text-gray-500">
+          © {{ date('Y') }} Admin Panel — {{ config('app.name', 'Laravel') }}.
+        </div>
+      </footer>
     </div>
 
-    <footer class="border-t bg-white" role="contentinfo">
-      <div class="mx-auto max-w-7xl px-4 py-6 text-center text-sm text-gray-500">
-        © {{ date('Y') }} Admin Panel — {{ config('app.name', 'Laravel') }}.
-      </div>
-    </footer>
+    {{-- Notifikasi toast otomatis (success, warning, error) --}}
+    @if (session('success') || session('warning') || session('error'))
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const show = () => {
+            Swal.fire({
+              toast: true,
+              position: 'top-end',
+              timer: 1800,
+              showConfirmButton: false,
+              icon: '{{ session('error') ? 'error' : (session('warning') ? 'warning' : 'success') }}',
+              title: @json(session('error') ?? session('warning') ?? session('success'))
+            });
+          };
+          if (window.Swal) show(); else setTimeout(show, 100);
+        });
+      </script>
+    @endif
+
+    {{-- Konfirmasi otomatis untuk form dengan class js-delete dan js-edit --}}
+    <script>
+      (function () {
+        function bindSwal() {
+          document.querySelectorAll('form.js-delete:not([data-swal-bound])').forEach((f) => {
+            f.dataset.swalBound = '1';
+            f.addEventListener('submit', (e) => {
+              e.preventDefault();
+              if (!window.Swal) return f.submit();
+              Swal.fire({
+                title: 'Hapus data ini?',
+                text: 'Tindakan ini tidak bisa dibatalkan.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus',
+                cancelButtonText: 'Batal'
+              }).then((res) => { if (res.isConfirmed) f.submit(); });
+            }, { capture: true });
+          });
+
+          document.querySelectorAll('form.js-edit:not([data-swal-bound])').forEach((f) => {
+            f.dataset.swalBound = '1';
+            f.addEventListener('submit', (e) => {
+              e.preventDefault();
+              if (!window.Swal) return f.submit();
+              Swal.fire({
+                title: 'Simpan perubahan?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Simpan',
+                cancelButtonText: 'Batal'
+              }).then((res) => { if (res.isConfirmed) f.submit(); });
+            }, { capture: true });
+          });
+        }
+        document.addEventListener('DOMContentLoaded', bindSwal);
+      })();
+    </script>
 
     @stack('scripts')
   </body>

@@ -1,11 +1,16 @@
 <header class="sticky top-0 z-30 w-full border-b bg-white/80 backdrop-blur">
   <div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
+    {{-- Logo dan tautan menuju dashboard admin --}}
     <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2">
-      <img src="/theme/images/logo.png" alt="Logo" class="h-6 w-auto">
+      <img src="/theme/icons/Vector 1.svg" alt="Logo" class="h-6 w-auto">
       <span class="font-semibold">Admin Panel</span>
     </a>
 
+    {{-- Navigasi kanan: tautan ke halaman utama dan logout --}}
     <nav class="flex items-center gap-3 text-sm">
+      <a href="{{ route('landing') }}" class="hover:text-indigo-600">View Site</a>
+
+      {{-- Informasi pengguna dan tombol logout --}}
       <div class="flex items-center gap-2">
         <span class="text-gray-600">{{ auth()->user()->name ?? 'Admin' }}</span>
         <form method="POST" action="{{ route('logout') }}">
